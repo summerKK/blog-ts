@@ -1,25 +1,28 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
 import { Icon } from 'antd';
 import styles from './BlogLayout.less';
 
+interface BlogLayoutProps {
+  children: React.ReactElement[];
+}
+
 const siteTitle = ['H', 'i', ',', 'S', 'u', 'm', 'm', 'e', 'r'];
 
-class BlogLayout extends Component<any> {
-  componentDidMount(): void {
-    const element = document.getElementById('siteTitle');
-    const animatedSpans = element.getElementsByTagName('span');
-    const animatedLength = animatedSpans.length;
+const BlogLayout: React.FC<BlogLayoutProps> = props => {
+  const { children } = props;
+  useEffect(() => {
+    const element: HTMLElement | null = document.getElementById('siteTitle');
+    const animatedSpans: HTMLCollectionOf<HTMLElement> = element!.getElementsByTagName('span');
+    const animatedLength: number = animatedSpans.length;
+    // 字体淡入效果
     for (let i = 0; i < animatedLength; i += 1) {
       setTimeout(() => {
         animatedSpans[i].style.opacity = '1';
       }, i * 250);
     }
-  }
-
-  render() {
-    const { children } = this.props;
-
-    return (
+  });
+  return (
+    <div>
       <header className={styles.header}>
         <div className={styles.headerInner}>
           <nav className={styles.nav}>
@@ -69,8 +72,9 @@ class BlogLayout extends Component<any> {
           </div>
         </div>
       </header>
-    );
-  }
-}
+      <div>{children}</div>
+    </div>
+  );
+};
 
 export default BlogLayout;
