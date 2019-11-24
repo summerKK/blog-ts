@@ -3,6 +3,7 @@ import defaultSettings from './defaultSettings'; // https://umijs.org/config/
 
 import slash from 'slash2';
 import webpackPlugin from './plugin.config';
+
 const { pwa, primaryColor } = defaultSettings;
 
 // preview.pro.ant.design only do not use in your production ;
@@ -95,30 +96,47 @@ export default {
       path: '/',
       component: '../layouts/SecurityLayout',
       routes: [
+        // {
+        //   path: '/',
+        //   component: '../layouts/BasicLayout',
+        //   authority: ['admin', 'user'],
+        //   routes: [
+        //     {
+        //       path: '/',
+        //       redirect: '/welcome',
+        //     },
+        //     {
+        //       path: '/welcome',
+        //       name: 'welcome',
+        //       icon: 'smile',
+        //       component: './Welcome',
+        //     },
+        //     {
+        //       path: '/admin',
+        //       name: 'admin',
+        //       icon: 'crown',
+        //       component: './Admin',
+        //       authority: ['admin'],
+        //     },
+        //     {
+        //       component: './404',
+        //     },
+        //   ],
+        // },
         {
           path: '/',
-          component: '../layouts/BasicLayout',
+          component: '../layouts/BlogLayout',
           authority: ['admin', 'user'],
           routes: [
             {
               path: '/',
-              redirect: '/welcome',
+              redirect: '/index',
             },
             {
-              path: '/welcome',
-              name: 'welcome',
+              path: '/index',
+              name: 'index',
               icon: 'smile',
-              component: './Welcome',
-            },
-            {
-              path: '/admin',
-              name: 'admin',
-              icon: 'crown',
-              component: './Admin',
-              authority: ['admin'],
-            },
-            {
-              component: './404',
+              component: './frontend/index',
             },
           ],
         },
@@ -181,12 +199,12 @@ export default {
   },
   chainWebpack: webpackPlugin,
   /*
-  proxy: {
-    '/server/api/': {
-      target: 'https://preview.pro.ant.design/',
-      changeOrigin: true,
-      pathRewrite: { '^/server': '' },
-    },
-  },
-  */
+      proxy: {
+        '/server/api/': {
+          target: 'https://preview.pro.ant.design/',
+          changeOrigin: true,
+          pathRewrite: { '^/server': '' },
+        },
+      },
+      */
 } as IConfig;
