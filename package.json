@@ -4,9 +4,10 @@
   "private": true,
   "description": "An out-of-box UI solution for enterprise applications",
   "scripts": {
+    "predeploy": "yarn run build",
+    "deploy": "gh-pages -d dist",
     "analyze": "cross-env ANALYZE=1 umi build",
     "build": "umi build",
-    "deploy": "npm run site && npm run gh-pages",
     "fetch:blocks": "pro fetch-blocks && npm run prettier",
     "format-imports": "cross-env import-sort --write '**/*.{js,jsx,ts,tsx}'",
     "gh-pages": "cp CNAME ./dist/ && gh-pages -d dist",
@@ -91,7 +92,7 @@
     "enzyme": "^3.9.0",
     "eslint": "5.16.0",
     "express": "^4.17.1",
-    "gh-pages": "^2.0.1",
+    "gh-pages": "^2.1.1",
     "husky": "^3.0.0",
     "import-sort-cli": "^6.0.0",
     "import-sort-parser-babylon": "^6.0.0",
@@ -120,5 +121,6 @@
     "src/**/*.less",
     "config/**/*.js*",
     "scripts/**/*.js"
-  ]
+  ],
+  "homepage": "https://summerKK.github.io/blog-ts"
 }
