@@ -3,3 +3,4 @@
 /config
 /node_modules
 .history
+/src/utils/background.js

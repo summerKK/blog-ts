@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { Icon } from 'antd';
 import styles from './BlogLayout.less';
 import { throttle } from 'lodash';
+import backgroundCanvas from '@/utils/background';
+import Aplayer from '@/components/Aplayer';
 
 interface BlogLayoutProps {
   children: React.ReactElement[];
@@ -40,6 +42,9 @@ const BlogLayout: React.FC<BlogLayoutProps> = props => {
         }
       }, 500),
     );
+
+    // 背景
+    backgroundCanvas();
   }, []);
 
   const backToTop: () => void = () => {
@@ -105,6 +110,8 @@ const BlogLayout: React.FC<BlogLayoutProps> = props => {
         id="backToTop"
         onClick={backToTop}
       ></div>
+      <canvas id="evanyou"></canvas>
+      <Aplayer />
     </React.Fragment>
   );
 };
