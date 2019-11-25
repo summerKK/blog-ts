@@ -122,5 +122,5 @@
     "config/**/*.js*",
     "scripts/**/*.js"
   ],
-  "homepage": "https://summerKK.github.io/blog-ts"
+  "homepage": "https://summerKK.github.io/blog-ts/"
 }
