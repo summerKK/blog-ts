@@ -125,38 +125,68 @@ canvas {
     .iconStyle {
       color: #fff;
     }
-  }
 
-  .siteBrandWrap {
-    position: relative;
-    width: 100%;
-    height: 650px;
-    padding: 20px 0;
-    text-align: center;
-    background-image: url(../assets/images/header-leg.jpg);
-    background-repeat: no-repeat;
-    background-position: center bottom;
-    background-size: cover;
-  }
-
-  .siteTitle {
-    position: relative;
-    top: 180px;
-    height: 100px;
-    font-size: 100px;
-    line-height: 100px;
-
-    span {
-      color: #fff;
-      font-family: 'Sigmar One', serif;
-      line-height: 100px;
-      text-shadow: 1px 1px 0 #ff3f1a, -1px -1px 0 #00a7e0;
-      opacity: 0;
-      transition: all 0.3s;
+    .siteBrandWrap {
+      position: relative;
+      width: 100%;
+      height: 650px;
+      padding: 20px 0;
+      text-align: center;
+      background-image: url(../assets/images/header-leg.jpg);
+      background-repeat: no-repeat;
+      background-position: center bottom;
+      background-size: cover;
     }
 
-    &:hover {
-      opacity: 0.5;
+    .siteTitle {
+      position: relative;
+      top: 180px;
+      height: 100px;
+      font-size: 100px;
+      line-height: 100px;
+
+      span {
+        color: #fff;
+        font-family: 'Sigmar One', serif;
+        line-height: 100px;
+        text-shadow: 1px 1px 0 #ff3f1a, -1px -1px 0 #00a7e0;
+        opacity: 0;
+        transition: all 0.3s;
+      }
+
+      &:hover {
+        opacity: 0.5;
+      }
+    }
+
+    .siteMaster {
+      position: relative;
+      top: -155px;
+      width: 70%;
+      margin: auto;
+      padding: 30px 0;
+      text-align: center;
+      background: rgba(230, 244, 249, 0.8);
+
+      .siteMasterAvatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 100%;
+      }
+
+      .siteMasterDescription {
+        margin-top: 25px;
+        font-weight: 700;
+        font-size: 17px;
+
+        span:first-child {
+          color: #1890ff;
+        }
+
+        span:last-child {
+          color: #ff3f1a;
+        }
+      }
     }
   }
 }

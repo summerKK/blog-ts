@@ -4,6 +4,7 @@ import styles from './BlogLayout.less';
 import { throttle } from 'lodash';
 import backgroundCanvas from '@/utils/background';
 import Aplayer from '@/components/Aplayer';
+import avatar from '../assets/images/avatar.jpg';
 
 interface BlogLayoutProps {
   children: React.ReactElement[];
@@ -99,6 +100,13 @@ const BlogLayout: React.FC<BlogLayoutProps> = props => {
                 <span key={getKey()}>{item}</span>
               ))}
             </div>
+          </div>
+          <div className={styles.siteMaster}>
+            <img src={avatar} alt="" className={styles.siteMasterAvatar} />
+            <h2 className={styles.siteMasterDescription}>
+              <span>写代码是热爱，</span>
+              <span>写到世界充满爱！</span>
+            </h2>
           </div>
         </div>
       </header>
