@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Icon } from 'antd';
 import styles from './BlogLayout.less';
+import { throttle } from 'lodash';
 
 interface BlogLayoutProps {
   children: React.ReactElement[];
@@ -10,6 +11,11 @@ const siteTitle = ['H', 'i', ',', 'S', 'u', 'm', 'm', 'e', 'r'];
 
 const BlogLayout: React.FC<BlogLayoutProps> = props => {
   const { children } = props;
+  let key: number = 0;
+
+  // eslint-disable-next-line no-plusplus
+  const getKey: () => number = () => ++key;
+
   useEffect(() => {
     const element: HTMLElement | null = document.getElementById('siteTitle');
     const animatedSpans: HTMLCollectionOf<HTMLElement> = element!.getElementsByTagName('span');
@@ -20,9 +26,28 @@ const BlogLayout: React.FC<BlogLayoutProps> = props => {
         animatedSpans[i].style.opacity = '1';
       }, i * 250);
     }
-  });
+
+    // 监听滚动
+    const backToTop: HTMLElement = document.getElementById('backToTop') as HTMLElement;
+    window.addEventListener(
+      'scroll',
+      throttle(() => {
+        const backHeight: string = `${window.innerHeight - 1180}px`;
+        if (document.documentElement.scrollTop > 700 && backToTop.style.top === '-900px') {
+          backToTop.style.top = backHeight;
+        } else if (document.documentElement.scrollTop <= 700 && backToTop.style.top !== '-900px') {
+          backToTop.style.top = '-900px';
+        }
+      }, 500),
+    );
+  }, []);
+
+  const backToTop: () => void = () => {
+    window.scroll(0, -100);
+  };
+
   return (
-    <div>
+    <React.Fragment>
       <header className={styles.header}>
         <div className={styles.headerInner}>
           <nav className={styles.nav}>
@@ -66,14 +91,21 @@ const BlogLayout: React.FC<BlogLayoutProps> = props => {
           <div className={styles.siteBrandWrap}>
             <div className={styles.siteTitle} id="siteTitle">
               {siteTitle.map(item => (
-                <span key={item}>{item}</span>
+                <span key={getKey()}>{item}</span>
               ))}
             </div>
           </div>
         </div>
       </header>
       <div>{children}</div>
-    </div>
+      <footer></footer>
+      <div
+        className={styles.backToTop}
+        style={{ top: '-900px' }}
+        id="backToTop"
+        onClick={backToTop}
+      ></div>
+    </React.Fragment>
   );
 };
 
