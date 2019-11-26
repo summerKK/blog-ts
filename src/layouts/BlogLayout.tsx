@@ -4,7 +4,7 @@ import styles from './BlogLayout.less';
 import { throttle } from 'lodash';
 import backgroundCanvas from '@/utils/background';
 import Aplayer from '@/components/Aplayer';
-import avatar from '../assets/images/avatar.jpg';
+import avatar from '../assets/images/avatar.jpeg';
 
 interface BlogLayoutProps {
   children: React.ReactElement[];
