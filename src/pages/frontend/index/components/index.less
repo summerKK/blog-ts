@@ -1,0 +1,100 @@
+@import '~antd/es/style/themes/default.less';
+
+.content {
+  :global {
+    .ant-card-body {
+      padding: 0;
+      text-align: center;
+    }
+  }
+
+  width: 800px;
+  margin: 0 auto;
+  .article {
+    position: relative;
+    padding: 40px;
+    background: #fff;
+    .articleDate {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 70px;
+      height: 70px;
+      padding-top: 10px;
+      color: #fff;
+      line-height: 1.1;
+      text-align: center;
+      background: #97dffd;
+      border-radius: 50%;
+      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2),
+        0 1px 5px 0 rgba(0, 0, 0, 0.12);
+      transform: translate(-50%, -50%);
+
+      .articleDay {
+        font-weight: 800;
+        font-size: 30px;
+      }
+    }
+
+    .badge {
+      position: absolute;
+      top: 105px;
+      left: -15px;
+      padding: 7px 11px 7px 32px;
+      font-size: 14px;
+      line-height: 1;
+      background-color: #97dffd;
+      border-color: #47456d;
+      border-radius: 0 4px 4px 0;
+      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2),
+        0 1px 5px 0 rgba(0, 0, 0, 0.12);
+
+      a {
+        color: #fff;
+      }
+
+      &::after {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 0;
+        height: 0;
+        border-top: 0 solid transparent;
+        border-right-color: inherit;
+        border-right-width: 1em;
+        border-right-style: solid;
+        border-bottom: 1em solid transparent;
+        border-left: 0 solid transparent;
+        content: '';
+      }
+    }
+
+    .articleHeader {
+      margin-bottom: 20px;
+      a {
+        position: relative;
+        display: inline-block;
+        color: #444;
+        font-weight: 800;
+        font-size: 25px;
+        &::before {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 2px;
+          background-color: #000;
+          transform: scaleX(0);
+          visibility: hidden;
+          transition: all 0.2s;
+          content: '';
+        }
+
+        &:hover::before {
+          transform: scaleX(1);
+          visibility: visible;
+        }
+      }
+    }
+  }
+}

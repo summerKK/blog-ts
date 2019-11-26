@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Icon } from 'antd';
+import { Avatar, Icon } from 'antd';
 import styles from './BlogLayout.less';
 import { throttle } from 'lodash';
 import backgroundCanvas from '@/utils/background';
@@ -102,7 +102,7 @@ const BlogLayout: React.FC<BlogLayoutProps> = props => {
             </div>
           </div>
           <div className={styles.siteMaster}>
-            <img src={avatar} alt="" className={styles.siteMasterAvatar} />
+            <Avatar src={avatar} className={styles.siteMasterAvatar} />
             <h2 className={styles.siteMasterDescription}>
               <span>写代码是热爱，</span>
               <span>写到世界充满爱！</span>
@@ -110,7 +110,7 @@ const BlogLayout: React.FC<BlogLayoutProps> = props => {
           </div>
         </div>
       </header>
-      <div>{children}</div>
+      <main className={styles.main}>{children}</main>
       <footer></footer>
       <div
         className={styles.backToTop}
