@@ -22,7 +22,6 @@ class Article extends Component {
               </span>
             </div>
             <div className={styles.block}>
-              i
               <div className={styles.articleHeader}>
                 <h1>
                   <a href="">RSSHub Radar — 订阅一个 RSS 源不应该这么难</a>
