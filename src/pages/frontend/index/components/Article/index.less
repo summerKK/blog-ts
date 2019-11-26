@@ -1,4 +1,4 @@
-@import '~antd/es/style/themes/default.less';
+@import '../../../../../../node_modules/antd/es/style/themes/default.less';
 
 .content {
   :global {
@@ -94,6 +94,41 @@
           transform: scaleX(1);
           visibility: visible;
         }
+      }
+
+      .postMeta {
+        font-size: 12px;
+        .postTime {
+          color: #00a7e0;
+        }
+
+        .wordCount {
+          color: #000;
+        }
+
+        .visitor {
+          color: #ff3f1a;
+        }
+
+        span em {
+          margin: 0 5px;
+          color: #000;
+          font-size: 1.5em;
+        }
+      }
+    }
+
+    .articleDetail {
+      a {
+        display: inline-block;
+        padding: 1px 15px;
+        color: #fff;
+        font-size: 13px;
+        line-height: 2;
+        background: #97dffd;
+        border: none;
+        border-radius: 5px;
+        transition: all 0.5s;
       }
     }
   }
