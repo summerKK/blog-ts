@@ -1,0 +1,68 @@
+@import '~antd/es/style/themes/default.less';
+
+.introduce {
+  position: static;
+  float: right;
+  box-sizing: border-box;
+  width: 325px;
+  height: 400px;
+  padding: 20px;
+  color: #555;
+  text-align: center;
+  background: #fff;
+  border-radius: 5px;
+
+  .auth {
+    position: relative;
+    width: 100%;
+
+    &::before {
+      display: table;
+      content: ' ';
+    }
+
+    .authImg {
+      width: 100%;
+      border: none;
+    }
+    .authName {
+      position: absolute;
+      bottom: 5px;
+      left: 50%;
+      width: 130px;
+      font-size: 20px;
+      text-shadow: 1px 1px 0 #ff3f1a, -1px -1px 0 #00a7e0;
+      transform: translateX(-50%);
+      opacity: 0.8;
+    }
+
+    .authDescription {
+      margin: 5px 8px;
+      color: #000;
+      font-weight: 800;
+      font-size: 14px;
+    }
+  }
+
+  .link {
+    :global {
+      .anticon {
+        width: 42px;
+        height: 42px;
+        margin: 5px;
+        font-size: 16px;
+        line-height: 42px;
+        background-color: rgba(0, 0, 0, 0.1);
+        border-radius: 50%;
+        transition: all 0.3s ease-in-out;
+      }
+    }
+
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    justify-content: space-around;
+    box-sizing: border-box;
+    padding: 10px 20px;
+  }
+}
