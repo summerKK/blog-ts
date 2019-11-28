@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Card, Icon, Skeleton } from 'antd';
 import styles from './index.less';
+import classNames from 'classnames';
 
 class Article extends Component {
   componentDidMount(): void {}
@@ -8,7 +9,7 @@ class Article extends Component {
   render() {
     return (
       <Skeleton loading={false}>
-        <section className={styles.content}>
+        <section className={classNames(styles.content, styles.clearfix)}>
           <Card className={styles.article}>
             <div className={styles.articleDate}>
               <div className={styles.articleMonth}>08月</div>

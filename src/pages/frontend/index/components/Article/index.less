@@ -1,4 +1,5 @@
 @import '~antd/es/style/themes/default.less';
+@import '~@/utils/utils.less';
 
 .content {
   :global {
@@ -10,6 +11,7 @@
 
   float: left;
   width: 772px;
+
   .article {
     position: relative;
     padding: 40px;
@@ -132,4 +134,8 @@
       }
     }
   }
+}
+
+.clearfix {
+  .clearfix();
 }
