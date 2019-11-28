@@ -1,10 +1,12 @@
 {
-  "/umi.css": "/blog-ts/umi.e4333f3d.css",
-  "/umi.js": "/blog-ts/umi.21424577.js",
-  "/favicon.png": "/blog-ts/favicon.png",
-  "/icons/icon-128x128.png": "/blog-ts/icons/icon-128x128.png",
-  "/icons/icon-192x192.png": "/blog-ts/icons/icon-192x192.png",
-  "/icons/icon-512x512.png": "/blog-ts/icons/icon-512x512.png",
-  "/index.html": "/blog-ts/index.html",
-  "/static/BlogLayout.less": "/blog-ts/static/header-leg.d5016ecd.jpg"
+  "/umi.css": "/umi.6a45d298.css",
+  "/umi.js": "/umi.94a37257.js",
+  "/favicon.png": "/favicon.png",
+  "/icons/icon-128x128.png": "/icons/icon-128x128.png",
+  "/icons/icon-192x192.png": "/icons/icon-192x192.png",
+  "/icons/icon-512x512.png": "/icons/icon-512x512.png",
+  "/index.html": "/index.html",
+  "/static/avatar.jpeg": "/static/avatar.ba3503df.jpeg",
+  "/static/card.jpg": "/static/card.cacfdcd4.jpg",
+  "/static/BlogLayout.less": "/static/header-leg.d5016ecd.jpg"
 }
