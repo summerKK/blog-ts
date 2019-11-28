@@ -1,6 +1,6 @@
 # 预览图
 
-![预览图](./overview.jpg)
+![预览图](https://tva1.sinaimg.cn/large/006y8mN6gy1g9ds6otketj31c00u0kii.jpg)
 
 # Ant Design Pro
 
