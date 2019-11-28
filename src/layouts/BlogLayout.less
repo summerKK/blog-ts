@@ -59,7 +59,6 @@ canvas {
       width: 100%;
       line-height: 38px;
       background: rgba(40, 42, 44, 0.6);
-      transition: all 0.5s;
 
       ul {
         width: 80%;
@@ -126,14 +125,13 @@ canvas {
     }
 
     .nav.slideUp {
-      //animation: slideUp .5s;
-      line-height: 38px;
+      animation: slideUp 0.5s;
+      animation-fill-mode: forwards;
     }
 
     .nav.slideDown {
-      //animation: slideDown .5s;
-      height: 0;
-      overflow: hidden;
+      animation: slideDown 0.5s;
+      animation-fill-mode: forwards;
     }
 
     @keyframes slideDown {
