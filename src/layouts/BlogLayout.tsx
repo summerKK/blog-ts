@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
 import { Avatar, Icon } from 'antd';
 import styles from './BlogLayout.less';
-import { throttle } from 'lodash';
+import { throttle, debounce } from 'lodash';
 import backgroundCanvas from '@/utils/background';
 import Aplayer from '@/components/Aplayer';
 import avatar from '../assets/images/avatar.jpeg';
+import classNames from 'classnames';
 
 interface BlogLayoutProps {
   children: React.ReactElement[];
@@ -32,6 +33,7 @@ const BlogLayout: React.FC<BlogLayoutProps> = props => {
 
     // 监听滚动
     const backToTop: HTMLElement = document.getElementById('backToTop') as HTMLElement;
+    let position: number = document.documentElement.scrollTop;
     window.addEventListener(
       'scroll',
       throttle(() => {
@@ -41,6 +43,21 @@ const BlogLayout: React.FC<BlogLayoutProps> = props => {
         } else if (document.documentElement.scrollTop <= 700 && backToTop.style.top !== '-900px') {
           backToTop.style.top = '-900px';
         }
+
+        // 查看滑动距离
+        const nav: HTMLElement = document.getElementById('nav') as HTMLElement;
+        if (document.documentElement.scrollTop > position) {
+          debounce(() => {
+            nav.classList.remove(styles.slideUp);
+            nav.classList.add(styles.slideDown);
+          }, 500)();
+        } else {
+          debounce(() => {
+            nav.classList.remove(styles.slideDown);
+            nav.classList.add(styles.slideUp);
+          }, 500)();
+        }
+        position = document.documentElement.scrollTop;
       }, 500),
     );
 
@@ -56,7 +73,7 @@ const BlogLayout: React.FC<BlogLayoutProps> = props => {
     <React.Fragment>
       <header className={styles.header}>
         <div className={styles.headerInner}>
-          <nav className={styles.nav}>
+          <nav className={classNames(styles.nav)} id="nav">
             <ul>
               <li className={styles.menuItem}>
                 <Icon type="home" className={styles.iconStyle} />

@@ -59,6 +59,7 @@ canvas {
       width: 100%;
       line-height: 38px;
       background: rgba(40, 42, 44, 0.6);
+      transition: all 0.5s;
 
       ul {
         width: 80%;
@@ -121,6 +122,37 @@ canvas {
             background-color: inherit;
           }
         }
+      }
+    }
+
+    .nav.slideUp {
+      //animation: slideUp .5s;
+      line-height: 38px;
+    }
+
+    .nav.slideDown {
+      //animation: slideDown .5s;
+      height: 0;
+      overflow: hidden;
+    }
+
+    @keyframes slideDown {
+      0% {
+        transform: translateY(-8em);
+      }
+
+      100% {
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideUp {
+      0% {
+        transform: translateY(0);
+      }
+
+      100% {
+        transform: translateY(-8em);
       }
     }
 
