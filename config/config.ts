@@ -94,57 +94,56 @@ export default {
     },
     {
       path: '/',
-      component: '../layouts/SecurityLayout',
+      component: '../layouts/BlogLayout',
       routes: [
-        // {
-        //   path: '/',
-        //   component: '../layouts/BasicLayout',
-        //   authority: ['admin', 'user'],
-        //   routes: [
-        //     {
-        //       path: '/',
-        //       redirect: '/welcome',
-        //     },
-        //     {
-        //       path: '/welcome',
-        //       name: 'welcome',
-        //       icon: 'smile',
-        //       component: './Welcome',
-        //     },
-        //     {
-        //       path: '/admin',
-        //       name: 'admin',
-        //       icon: 'crown',
-        //       component: './Admin',
-        //       authority: ['admin'],
-        //     },
-        //     {
-        //       component: './404',
-        //     },
-        //   ],
-        // },
         {
           path: '/',
-          component: '../layouts/BlogLayout',
-          authority: ['admin', 'user'],
-          routes: [
-            {
-              path: '/',
-              redirect: '/index',
-            },
-            {
-              path: '/index',
-              name: 'index',
-              icon: 'smile',
-              component: './frontend/index',
-            },
-          ],
+          redirect: '/index',
         },
         {
-          component: './404',
+          path: '/index',
+          name: 'index',
+          icon: 'smile',
+          component: './frontend/index',
         },
       ],
     },
+    // {
+    //   path: '/',
+    //   component: '../layouts/SecurityLayout',
+    //   routes: [
+    //     {
+    //       path: '/',
+    //       component: '../layouts/BasicLayout',
+    //       authority: ['admin', 'user'],
+    //       routes: [
+    //         {
+    //           path: '/',
+    //           redirect: '/welcome',
+    //         },
+    //         {
+    //           path: '/welcome',
+    //           name: 'welcome',
+    //           icon: 'smile',
+    //           component: './Welcome',
+    //         },
+    //         {
+    //           path: '/admin',
+    //           name: 'admin',
+    //           icon: 'crown',
+    //           component: './Admin',
+    //           authority: ['admin'],
+    //         },
+    //         {
+    //           component: './404',
+    //         },
+    //       ],
+    //     },
+    //     {
+    //       component: './404',
+    //     },
+    //   ],
+    // },
 
     {
       component: './404',
