@@ -46,15 +46,15 @@ const BlogLayout: React.FC<BlogLayoutProps> = props => {
 
         // 查看滑动距离
         const nav: HTMLElement = document.getElementById('nav') as HTMLElement;
-        if (document.documentElement.scrollTop < position) {
-          debounce(() => {
-            nav.classList.remove(styles.slideUp);
-            nav.classList.add(styles.slideDown);
-          }, 500)();
-        } else {
+        if (document.documentElement.scrollTop > position) {
           debounce(() => {
             nav.classList.remove(styles.slideDown);
             nav.classList.add(styles.slideUp);
+          }, 500)();
+        } else {
+          debounce(() => {
+            nav.classList.remove(styles.slideUp);
+            nav.classList.add(styles.slideDown);
           }, 500)();
         }
         position = document.documentElement.scrollTop;
