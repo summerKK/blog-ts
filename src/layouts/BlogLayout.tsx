@@ -3,6 +3,7 @@ import { Avatar, Icon } from 'antd';
 import styles from './BlogLayout.less';
 import { throttle, debounce } from 'lodash';
 import backgroundCanvas from '@/utils/background';
+import '@/utils/cursor-effects';
 import Aplayer from '@/components/Aplayer';
 import avatar from '../assets/images/avatar.jpeg';
 import classNames from 'classnames';

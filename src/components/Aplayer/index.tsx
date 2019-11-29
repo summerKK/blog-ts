@@ -1,44 +1,37 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 // @ts-ignore
 import ReactAplayer from 'react-aplayer';
+import request from 'umi-request';
 
 const Aplayer = () => {
+  let aplayerRef: any;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await request
+        .get('https://api.i-meto.com/meting/api?server=netease&type=playlist&id=35798529')
+        .then(response => {
+          aplayerRef.list.add(response);
+        });
+    };
+    fetchData();
+  }, []);
+
   const props = {
     theme: '#F57F17',
     lrcType: 3,
     fixed: true,
     mini: true,
-    audio: [
-      {
-        name: '光るなら',
-        artist: 'Goose house',
-        url: 'https://cn-south-17-aplayer-46154810.oss.dogecdn.com/hikarunara.mp3',
-        cover: 'https://cn-south-17-aplayer-46154810.oss.dogecdn.com/hikarunara.jpg',
-        lrc: 'https://cn-south-17-aplayer-46154810.oss.dogecdn.com/hikarunara.lrc',
-        theme: '#ebd0c2',
-      },
-      {
-        name: 'トリカゴ',
-        artist: 'XX:me',
-        url: 'https://cn-south-17-aplayer-46154810.oss.dogecdn.com/darling.mp3',
-        cover: 'https://cn-south-17-aplayer-46154810.oss.dogecdn.com/darling.jpg',
-        lrc: 'https://cn-south-17-aplayer-46154810.oss.dogecdn.com/darling.lrc',
-        theme: '#46718b',
-      },
-      {
-        name: '前前前世',
-        artist: 'RADWIMPS',
-        url: 'https://cn-south-17-aplayer-46154810.oss.dogecdn.com/yourname.mp3',
-        cover: 'https://cn-south-17-aplayer-46154810.oss.dogecdn.com/yourname.jpg',
-        lrc: 'https://cn-south-17-aplayer-46154810.oss.dogecdn.com/yourname.lrc',
-        theme: '#505d6b',
-      },
-    ],
+    audio: [],
+  };
+
+  const onInit = (ap: any) => {
+    aplayerRef = ap;
   };
 
   return (
     <div id="reactAplayer">
-      <ReactAplayer {...props} />
+      <ReactAplayer {...props} onInit={onInit} />
     </div>
   );
 };

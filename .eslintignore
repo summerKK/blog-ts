@@ -4,3 +4,4 @@
 /node_modules
 .history
 /src/utils/background.js
+/src/utils/cursor-effects.js
