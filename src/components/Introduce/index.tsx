@@ -16,27 +16,17 @@ class Introduce extends Component {
             <p className={styles.authDescription}>天下漫友是一家！</p>
           </div>
           <div className={styles.link}>
-            <span>
+            <span data-tip="Github">
               <a href="">
                 <Icon type="github" />
               </a>
             </span>
-            <span>
+            <span data-tip="Twitter">
               <a href="">
                 <Icon type="twitter" />
               </a>
             </span>
-            <span>
-              <a href="">
-                <Icon type="qq" />
-              </a>
-            </span>
-            <span>
-              <a href="">
-                <Icon type="qq" />
-              </a>
-            </span>
-            <span>
+            <span data-tip="QQ">
               <a href="">
                 <Icon type="qq" />
               </a>

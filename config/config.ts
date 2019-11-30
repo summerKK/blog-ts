@@ -104,7 +104,7 @@ export default {
           path: '/index',
           name: 'index',
           icon: 'smile',
-          component: './frontend/index',
+          component: './frontend/home',
         },
       ],
     },
