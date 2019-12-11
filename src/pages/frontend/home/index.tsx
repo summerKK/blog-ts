@@ -6,10 +6,6 @@ import { connect } from 'dva';
 import { StateType } from '@/pages/frontend/home/model';
 import { Dispatch } from 'redux';
 
-interface IndexState {
-  detailState: boolean;
-}
-
 interface IndexProps {
   loading: boolean;
   home: StateType;
@@ -22,7 +18,7 @@ interface IndexProps {
     loading: loading.models.home,
   }),
 )
-class Index extends Component<IndexProps, IndexState> {
+class Index extends Component<IndexProps> {
   componentDidMount(): void {
     const { dispatch } = this.props;
     dispatch({
