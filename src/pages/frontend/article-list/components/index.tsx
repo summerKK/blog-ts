@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Skeleton } from 'antd';
-import styles from '../index.less';
+import styles from '@/components/ArticleSkeleton/index.less';
 import classNames from 'classnames';
-import { ArticleListDataItemType } from '@/pages/frontend/home/data';
+import { ArticleListDataItemType } from '@/pages/frontend/data';
 import ReactMarkdown from 'react-markdown';
 import Ellipsis from '@/components/Ellipsis';
-import ArticleSkeleton from '@/pages/frontend/home/components/ArticleSkeleton';
+import ArticleSkeleton from '@/components/ArticleSkeleton/ArticleSkeleton';
+import { Link } from 'umi';
 
 interface ArticleProps {
   dataSource: ArticleListDataItemType[];
@@ -22,16 +23,14 @@ const Index: React.FC<ArticleProps> = ({ loading, dataSource, ...rest }) => {
         {dataSource.map(item => (
           <ArticleSkeleton item={item} {...rest}>
             <div className={styles.articleBody}>
-              {articleState ? (
-                <Ellipsis lines={6}>
-                  <ReactMarkdown source={item.content} escapeHtml={false} />
-                </Ellipsis>
-              ) : (
+              <Ellipsis lines={6}>
                 <ReactMarkdown source={item.content} escapeHtml={false} />
-              )}
+              </Ellipsis>
             </div>
             <div className={styles.articleDetail}>
-              <a onClick={handleClickDetail}>阅读全文 »</a>
+              <Link to={`/article-item/${item.id}`}>
+                <a onClick={handleClickDetail}>阅读全文 »</a>
+              </Link>
             </div>
           </ArticleSkeleton>
         ))}

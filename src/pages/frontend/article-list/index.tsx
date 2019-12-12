@@ -1,20 +1,26 @@
 import React, { Component } from 'react';
-import Article from '@/pages/frontend/home/components/ArticleList';
+import Article from '@/pages/frontend/article-list/components';
 import styles from './index.less';
 import Introduce from '@/components/Introduce';
 import { connect } from 'dva';
-import { StateType } from '@/pages/frontend/home/model';
+import { StateType } from '@/pages/frontend/article-list/model';
 import { Dispatch } from 'redux';
 
 interface IndexProps {
   loading: boolean;
-  home: StateType;
+  articleList: StateType;
   dispatch: Dispatch<any>;
 }
 
 @connect(
-  ({ home, loading }: { home: StateType; loading: { models: { [key: string]: boolean } } }) => ({
-    home,
+  ({
+    articleList,
+    loading,
+  }: {
+    articleList: StateType;
+    loading: { models: { [key: string]: boolean } };
+  }) => ({
+    articleList,
     loading: loading.models.home,
   }),
 )
@@ -22,7 +28,7 @@ class Index extends Component<IndexProps> {
   componentDidMount(): void {
     const { dispatch } = this.props;
     dispatch({
-      type: 'home/fetchArticle',
+      type: 'articleList/fetchArticle',
       payload: {
         count: 10,
       },
@@ -30,8 +36,8 @@ class Index extends Component<IndexProps> {
   }
 
   render() {
-    const { home, loading } = this.props;
-    const { list } = home;
+    const { articleList, loading } = this.props;
+    const { list } = articleList;
     return (
       <div className={styles.mainInner}>
         <Article dataSource={list} loading={loading} />

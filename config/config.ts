@@ -1,6 +1,5 @@
 import { IConfig, IPlugin } from 'umi-types';
 import defaultSettings from './defaultSettings'; // https://umijs.org/config/
-
 import slash from 'slash2';
 import webpackPlugin from './plugin.config';
 
@@ -104,7 +103,13 @@ export default {
           path: '/index',
           name: 'index',
           icon: 'smile',
-          component: './frontend/home',
+          component: './frontend/article-list',
+        },
+        {
+          path: '/article-item/:id',
+          name: 'articleItem',
+          icon: 'smile',
+          component: './frontend/article-detail',
         },
       ],
     },

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { ArticleListDataItemType } from '@/pages/frontend/home/data';
+import { ArticleListDataItemType } from '@/pages/frontend/data';
 
 const fakeArticles = [
   {

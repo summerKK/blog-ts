@@ -1,10 +1,10 @@
+import { ArticleListDataItemType } from '@/pages/frontend/data';
 import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
-import { ArticleListDataItemType } from '@/pages/frontend/home/data';
-import { getArticleList } from '@/pages/frontend/home/service';
+import { getArticleItem } from './service';
 
 export interface StateType {
-  list: ArticleListDataItemType[];
+  articleItem: ArticleListDataItemType | {};
 }
 
 export type Effect = (
@@ -16,32 +16,32 @@ export interface ModelType {
   namespace: string;
   state: StateType;
   effects: {
-    fetchArticle: Effect;
+    fetchArticleItem: Effect;
   };
   reducers: {
-    articleList: Reducer<StateType>;
+    articleItem: Reducer<StateType>;
   };
 }
 
 const Model: ModelType = {
-  namespace: 'home',
+  namespace: 'articleItem',
   state: {
-    list: [],
+    articleItem: {},
   },
   effects: {
-    *fetchArticle({ payload }, { call, put }) {
-      const response = yield call(getArticleList, payload);
+    *fetchArticleItem({ payload }, { call, put }) {
+      const response = yield call(getArticleItem, payload);
       yield put({
-        type: 'articleList',
+        type: 'articleItem',
         payload: response,
       });
     },
   },
   reducers: {
-    articleList(state, action) {
+    articleItem(state, action) {
       return {
         ...state,
-        list: action.payload,
+        articleItem: action.payload,
       };
     },
   },

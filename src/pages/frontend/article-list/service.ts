@@ -1,5 +1,5 @@
 import request from '@/utils/request';
-import { ArticleListDataItemType } from '@/pages/frontend/home/data';
+import { ArticleListDataItemType } from '@/pages/frontend/data';
 
 interface ParamsType extends Partial<ArticleListDataItemType> {
   count?: number;

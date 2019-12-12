@@ -2,13 +2,20 @@ import React from 'react';
 import styles from './index.less';
 import moment from 'moment';
 import { Card, Icon } from 'antd';
-import { ArticleListDataItemType } from '@/pages/frontend/home/data';
+import { ArticleListDataItemType } from '@/pages/frontend/data';
 
 interface ArticleSkeletonProps {
   item: ArticleListDataItemType;
+  className?: string;
+  loading?: boolean;
 }
 
-const ArticleSkeleton: React.FC<ArticleSkeletonProps> = ({ item, children, ...rest }) => (
+const ArticleSkeleton: React.FC<ArticleSkeletonProps> = ({
+  item,
+  children,
+  className,
+  ...rest
+}) => (
   <Card className={styles.article} key={item.id} {...rest}>
     <div className={styles.articleDate}>
       <div className={styles.articleMonth}>{moment(item.created_at).format('M')}月</div>
