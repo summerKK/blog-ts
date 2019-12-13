@@ -7,6 +7,9 @@ import { ArticleListDataItemType } from '@/pages/frontend/data';
 import ReactMarkdown from 'react-markdown';
 import { ConnectProps } from '@/models/connect';
 import styles from '@/components/ArticleSkeleton/index.less';
+import articleListStyle from '@/pages/frontend/article-list/index.less';
+import classNames from 'classnames';
+import Introduce from '@/components/Introduce';
 
 interface ArticleDetailProps {
   loading: boolean;
@@ -48,11 +51,16 @@ class ArticleDetail extends Component<ArticleDetailProps> {
     const { articleItem, loading } = this.props;
     const item = articleItem.articleItem as ArticleListDataItemType;
     return (
-      <ArticleSkeleton item={item} loading={loading}>
-        <div className={styles.articleBody}>
-          <ReactMarkdown source={item.content} escapeHtml={false} />
-        </div>
-      </ArticleSkeleton>
+      <div className={articleListStyle.mainInner}>
+        <section className={classNames(styles.content, styles.clearfix)}>
+          <ArticleSkeleton item={item} loading={loading}>
+            <div className={styles.articleBody}>
+              <ReactMarkdown source={item.content} escapeHtml={false} />
+            </div>
+          </ArticleSkeleton>
+        </section>
+        <Introduce />
+      </div>
     );
   }
 }
