@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Skeleton } from 'antd';
 import styles from '@/components/ArticleSkeleton/index.less';
 import classNames from 'classnames';
@@ -13,15 +13,13 @@ interface ArticleProps {
   loading: boolean;
 }
 const Index: React.FC<ArticleProps> = ({ loading, dataSource, ...rest }) => {
-  const [articleState, setArticleState] = useState<boolean>(true);
-
-  const handleClickDetail = () => setArticleState(!articleState);
+  const handleClickDetail = () => window.scroll(0, 400);
 
   return (
     <Skeleton loading={loading}>
       <section className={classNames(styles.content, styles.clearfix)}>
         {dataSource.map(item => (
-          <ArticleSkeleton item={item} {...rest}>
+          <ArticleSkeleton item={item} {...rest} key={item.id}>
             <div className={styles.articleBody}>
               <Ellipsis lines={6}>
                 <ReactMarkdown source={item.content} escapeHtml={false} />

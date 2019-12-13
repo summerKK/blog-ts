@@ -23,7 +23,7 @@ const ArticleSkeleton: React.FC<ArticleSkeletonProps> = ({
     </div>
     <div className={styles.badge}>
       <span>
-        <a href="">
+        <a>
           <span>{item.article_type}</span>
         </a>
       </span>
@@ -31,7 +31,7 @@ const ArticleSkeleton: React.FC<ArticleSkeletonProps> = ({
     <div className={styles.block}>
       <div className={styles.articleHeader}>
         <h1>
-          <a href="">{item.title}</a>
+          <a>{item.title}</a>
         </h1>
         <div className={styles.postMeta}>
           <Icon type="calendar" style={{ color: '#00a7e0', marginRight: '5px' }} />
