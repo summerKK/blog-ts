@@ -3,15 +3,14 @@ FROM circleci/node:latest-browsers as builder
 WORKDIR /usr/src/app/
 USER root
 COPY package.json ./
+COPY yarn.lock ./
 RUN yarn
 
 COPY ./ ./
 
-RUN npm run test:all
+RUN yarn run test:all
 
-RUN npm run fetch:blocks
-
-RUN npm run build
+RUN yarn run build
 
 
 FROM nginx

@@ -7,8 +7,6 @@ RUN yarn
 
 COPY ./ ./
 
-RUN npm run test:all
+RUN yarn run test:all
 
-RUN npm run fetch:blocks
-
-CMD ["npm", "run", "build"]
+CMD ["yarn", "run", "build"]

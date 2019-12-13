@@ -1,11 +1,12 @@
-FROM node:latest
+FROM yarn:latest
 
 WORKDIR /usr/src/app/
 
 COPY package.json ./
-RUN npm install --silent --no-cache --registry=https://registry.npm.taobao.org
+COPY yarn.lock ./
+RUN yarn install
 
 COPY ./ ./
 
 
-CMD ["npm", "run", "start"]
+CMD ["yarn", "run", "start"]
