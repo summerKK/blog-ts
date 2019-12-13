@@ -130,7 +130,9 @@ class CursorSpecialEffects {
     style.width = this.renderCanvas.width = this.computerCanvas.width = this.globalWidth;
     style.height = this.renderCanvas.height = this.computerCanvas.height = this.globalHeight;
 
-    document.body.append(this.renderCanvas);
+    const cursorEffectElement = document.getElementById('cursorEffect');
+    cursorEffectElement.innerHTML = '';
+    cursorEffectElement.append(this.renderCanvas);
 
     window.addEventListener('mousedown', this.handleMouseDown.bind(this));
     window.addEventListener('pagehide', this.handlePageHide.bind(this));
@@ -158,5 +160,4 @@ class CursorSpecialEffects {
   }
 }
 
-const cursorSpecialEffects = new CursorSpecialEffects();
-cursorSpecialEffects.init();
+export default CursorSpecialEffects;

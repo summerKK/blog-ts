@@ -3,7 +3,7 @@ import { Avatar, Icon } from 'antd';
 import styles from './BlogLayout.less';
 import { throttle, debounce } from 'lodash';
 import backgroundCanvas from '@/utils/background';
-import '@/utils/cursor-effects';
+import CursorSpecialEffects from '@/utils/cursor-effects';
 import Aplayer from '@/components/Aplayer';
 import avatar from '../assets/images/avatar.jpeg';
 import classNames from 'classnames';
@@ -64,6 +64,17 @@ const BlogLayout: React.FC<BlogLayoutProps> = props => {
 
     // 背景
     backgroundCanvas();
+
+    // 鼠标特效
+    new CursorSpecialEffects().init();
+
+    // 监听页面变化,调整鼠标特效位置
+    window.addEventListener(
+      'resize',
+      debounce(() => {
+        new CursorSpecialEffects().init();
+      }, 1000),
+    );
   }, []);
 
   const backToTop: () => void = () => {
@@ -138,6 +149,7 @@ const BlogLayout: React.FC<BlogLayoutProps> = props => {
       ></div>
       <canvas id="evanyou"></canvas>
       <Aplayer />
+      <div id="cursorEffect"></div>
     </React.Fragment>
   );
 };
