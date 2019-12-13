@@ -1,8 +1,5 @@
-const backgroundCanvas = () => {
-  document.addEventListener('touchmove', function(e) {
-    e.preventDefault();
-  });
-  var c = document.getElementsByTagName('canvas')[0],
+const evanyou = () => {
+  var c = document.getElementById('evanyou'),
     x = c.getContext('2d'),
     pr = window.devicePixelRatio || 1,
     w = window.innerWidth,
@@ -19,7 +16,7 @@ const backgroundCanvas = () => {
   x.scale(pr, pr);
   x.globalAlpha = 0.6;
 
-  function i() {
+  function evanyou() {
     x.clearRect(0, 0, w, h);
     q = [
       {
@@ -38,7 +35,7 @@ const backgroundCanvas = () => {
     x.beginPath();
     x.moveTo(i.x, i.y);
     x.lineTo(j.x, j.y);
-    let k = j.x + (z() * 2 - 0.25) * f,
+    var k = j.x + (z() * 2 - 0.25) * f,
       n = y(j.y);
     x.lineTo(k, n);
     x.closePath();
@@ -63,9 +60,9 @@ const backgroundCanvas = () => {
     return t > h || t < 0 ? y(p) : t;
   }
 
-  document.onclick = i;
-  document.ontouchstart = i;
-  i();
+  document.onclick = evanyou;
+  document.ontouchstart = evanyou;
+  evanyou();
 };
 
-export default backgroundCanvas;
+export default evanyou;
