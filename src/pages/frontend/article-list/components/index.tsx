@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Skeleton } from 'antd';
 import styles from '@/components/ArticleSkeleton/index.less';
 import classNames from 'classnames';
@@ -13,7 +13,17 @@ interface ArticleProps {
   loading: boolean;
 }
 const Index: React.FC<ArticleProps> = ({ loading, dataSource, ...rest }) => {
-  const handleClickDetail = () => window.scroll(0, 400);
+  const handleClickDetail = () => {
+    localStorage.setItem('articleListHeight', String(document.documentElement.scrollTop));
+    window.scroll(0, 400);
+  };
+
+  useEffect(() => {
+    if (Number(localStorage.getItem('articleListHeight')) > 0) {
+      window.scroll(0, Number(localStorage.getItem('articleListHeight')));
+      localStorage.setItem('articleListHeight', '0');
+    }
+  }, []);
 
   return (
     <Skeleton loading={loading}>
