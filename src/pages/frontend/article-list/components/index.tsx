@@ -6,7 +6,7 @@ import { ArticleListDataItemType } from '@/pages/frontend/data';
 import ReactMarkdown from 'react-markdown';
 import Ellipsis from '@/components/Ellipsis';
 import ArticleSkeleton from '@/components/ArticleSkeleton/ArticleSkeleton';
-import { Link } from 'umi';
+import Link from 'umi/link';
 
 interface ArticleProps {
   dataSource: ArticleListDataItemType[];
@@ -36,8 +36,8 @@ const Index: React.FC<ArticleProps> = ({ loading, dataSource, ...rest }) => {
               </Ellipsis>
             </div>
             <div className={styles.articleDetail}>
-              <Link to={`/article-item/${item.id}`}>
-                <a onClick={handleClickDetail}>阅读全文 »</a>
+              <Link to={`/article-item/${item.id}`} onClick={handleClickDetail}>
+                阅读全文 »
               </Link>
             </div>
           </ArticleSkeleton>
