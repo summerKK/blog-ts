@@ -31,12 +31,12 @@ const Index: React.FC<ArticleProps> = ({ loading, dataSource, ...rest }) => {
         {dataSource.map(item => (
           <ArticleSkeleton item={item} {...rest} key={item.id}>
             <div className={styles.articleBody}>
-              <Ellipsis lines={6}>
+              <Ellipsis lines={30}>
                 <MarkDown content={item.content} />
               </Ellipsis>
             </div>
             <div className={styles.articleDetail}>
-              <Link to={`/article-item/${item.id}`} onClick={handleClickDetail}>
+              <Link to={`/article-item/${item.id}/`} onClick={handleClickDetail}>
                 阅读全文 »
               </Link>
             </div>

@@ -20,6 +20,10 @@ class Tocify {
   currentAnchor: AnchorItemsType | null = null;
 
   constructor() {
+    this.init();
+  }
+
+  init() {
     this.anchorItems = [];
     this.anchorCurrentLevel = 0;
     this.parentAnchor = null;
@@ -70,7 +74,7 @@ class Tocify {
 
   render() {
     return (
-      <Anchor showInkInFixed style={{ textAlign: 'left' }}>
+      <Anchor showInkInFixed style={{ textAlign: 'left' }} targetOffset={30} affix={false}>
         {this.renderAnchor(this.anchorItems)}
       </Anchor>
     );

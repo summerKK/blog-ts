@@ -8,10 +8,9 @@ import { ConnectProps } from '@/models/connect';
 import styles from '@/components/ArticleSkeleton/index.less';
 import articleListStyle from '@/pages/frontend/article-list/index.less';
 import classNames from 'classnames';
-import Introduce from '@/components/Introduce';
 import MarkDown from '@/components/MarkDown/MarkDown';
 import Tocify from '@/components/MarkDown/Tocify';
-import { Card } from 'antd';
+import { Affix, Card } from 'antd';
 
 interface ArticleDetailStats {
   tocify?: Tocify;
@@ -79,8 +78,11 @@ class ArticleDetail extends Component<ArticleDetailProps, ArticleDetailStats> {
             />
           </ArticleSkeleton>
         </section>
-        <Introduce />
-        <Card style={{ width: 325, float: 'right' }}>{tocify && tocify.render()}</Card>
+        <Affix offsetTop={60}>
+          <Card style={{ width: 325, float: 'right', borderRadius: '8px' }}>
+            {tocify && tocify.render()}
+          </Card>
+        </Affix>
       </div>
     );
   }

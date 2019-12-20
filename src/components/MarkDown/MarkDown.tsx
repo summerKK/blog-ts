@@ -27,16 +27,24 @@ class MarkDown extends Component<MarkDownProps> {
     }
   }
 
+  shouldComponentUpdate(nextProps: Readonly<MarkDownProps>): boolean {
+    if (nextProps.content === this.props.content) {
+      return false;
+    }
+    return true;
+  }
+
   // eslint-disable-next-line no-plusplus
   getIndex = () => this.index++;
 
   getMarkdownText = (content: string): { __html: string } => {
     if (content) {
+      this.tocify.init();
       const render: Renderer = new marked.Renderer();
       render.heading = (text, level) => {
-        const index = `anchor-${text}${this.getIndex()}`;
+        const index = `anchor-${text}${this.getIndex()}`.replace(/\s+/g, '-');
         this.tocify.addAnchor(text, level, index);
-        return `<h${level} id=${index}>${text}</h${level}>`;
+        return `<h${level} id="${index}">${text}</h${level}>`;
       };
       marked.setOptions({
         renderer: render,
