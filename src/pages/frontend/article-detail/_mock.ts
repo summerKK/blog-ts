@@ -1,258 +1,403 @@
 import { Request, Response } from 'express';
+import { parse } from 'url';
 
 const fakeArticles = [
   {
     id: 1,
-    title: 'RSSHub Radar — 订阅一个 RSS 源不应该这么难',
+    title: '1.1-chan.md',
     content:
-      '# mall学习教程\n' +
-      '<p>\n' +
-      '<a href="#公众号"><img src="http://macro-oss.oss-cn-shenzhen.aliyuncs.com/mall/badge/%E5%85%AC%E4%BC%97%E5%8F%B7-macrozheng-blue.svg" alt="公众号"></a>\n' +
-      '<a href="https://github.com/macrozheng/mall"><img src="http://macro-oss.oss-cn-shenzhen.aliyuncs.com/mall/badge/%E5%90%8E%E5%8F%B0%E9%A1%B9%E7%9B%AE-mall-blue.svg" alt="后台项目"></a>\n' +
-      '<a href="https://github.com/macrozheng/mall-admin-web"><img src="http://macro-oss.oss-cn-shenzhen.aliyuncs.com/mall/badge/%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE-mall--admin--web-green.svg" alt="前端项目"></a>\n' +
-      '</p>\n' +
+      '# 1. 前言\n' +
+      'channel是Golang在语言层面提供的goroutine间的通信方式，比Unix管道更易用也更轻便。channel主要用于进程内各goroutine间通信，如果需要跨进程通信，建议使用分布式系统的方法来解决。\n' +
       '\n' +
-      '## 简介\n' +
-      'mall学习教程，架构、业务、技术要点全方位解析。mall项目（25k+star）是一套电商系统，使用现阶段主流技术实现。\n' +
-      '涵盖了SpringBoot2.1.3、MyBatis3.4.6、Elasticsearch6.2.2、RabbitMQ3.7.15、Redis3.2、Mongodb3.2、Mysql5.7等技术，采用Docker容器化部署。\n' +
+      '本章从源码角度分析channel的实现机制，实际上这部分源码非常简单易读。\n' +
       '\n' +
-      '## 项目地址\n' +
-      '- 后台项目：[https://github.com/macrozheng/mall](https://github.com/macrozheng/mall)\n' +
-      '- 前端项目：[https://github.com/macrozheng/mall-admin-web](https://github.com/macrozheng/mall-admin-web)\n' +
+      '# 2. chan数据结构\n' +
+      '`src/runtime/chan.go:hchan`定义了channel的数据结构：\n' +
+      '```go\n' +
+      'type hchan struct {\n' +
+      '\tqcount   uint           // 当前队列中剩余元素个数\n' +
+      '\tdataqsiz uint           // 环形队列长度，即可以存放的元素个数\n' +
+      '\tbuf      unsafe.Pointer // 环形队列指针\n' +
+      '\telemsize uint16         // 每个元素的大小\n' +
+      '\tclosed   uint32\t        // 标识关闭状态\n' +
+      '\telemtype *_type         // 元素类型\n' +
+      '\tsendx    uint           // 队列下标，指示元素写入时存放到队列中的位置\n' +
+      '\trecvx    uint           // 队列下标，指示元素从队列的该位置读出\n' +
+      '\trecvq    waitq          // 等待读消息的goroutine队列\n' +
+      '\tsendq    waitq          // 等待写消息的goroutine队列\n' +
+      '\tlock mutex              // 互斥锁，chan不允许并发读写\n' +
+      '}\n' +
+      '```\n' +
+      '从数据结构可以看出channel由队列、类型信息、goroutine等待队列组成，下面分别说明其原理。\n' +
       '\n' +
-      '## 更好的阅读体验\n' +
-      '- 文档地址：[http://www.macrozheng.com](http://www.macrozheng.com)\n' +
-      '- 备用地址：[https://macrozheng.github.io/mall-learning](https://macrozheng.github.io/mall-learning)\n' +
+      '## 2.1 环形队列\n' +
+      'chan内部实现了一个环形队列作为其缓冲区，队列的长度是创建chan时指定的。\n' +
       '\n' +
-      '## 序章\n' +
-      '- [mall架构及功能概览](https://juejin.im/post/5cf7c305e51d4510b71da5c5)\n' +
-      '- [mall学习所需知识点（推荐资料）](https://juejin.im/post/5cf7c3aef265da1ba84a7fdc)\n' +
+      '下图展示了一个可缓存6个元素的channel示意图：\n' +
       '\n' +
-      '## 架构篇\n' +
-      '> 手把手教你搭建一个mall在使用的项目骨架\n' +
+      '![](images/chan-01-circle_queue.png)\n' +
       '\n' +
-      '- [mall整合SpringBoot+MyBatis搭建基本骨架](https://juejin.im/post/5cf7c4a7e51d4577790c1c50)\n' +
-      '- [mall整合Swagger-UI实现在线API文档](https://juejin.im/post/5cf9035cf265da1bb47d54f8)\n' +
-      '- [mall整合Redis实现缓存功能](https://juejin.im/post/5cf90e9ee51d454f6f16eba0)\n' +
-      '- [mall整合SpringSecurity和JWT实现认证和授权（一）](https://juejin.im/post/5cf90fa5e51d455d6d5357d3)\n' +
-      '- [mall整合SpringSecurity和JWT实现认证和授权（二）](https://juejin.im/post/5cfa0933f265da1b8f1ab2da)\n' +
-      '- [mall整合SpringTask实现定时任务](https://juejin.im/post/5cfa0ea16fb9a07eaf2b8261)\n' +
-      '- [mall整合Elasticsearch实现商品搜索](https://juejin.im/post/5cfba3e9f265da1b614fea60)\n' +
-      '- [mall整合Mongodb实现文档操作](https://juejin.im/post/5cfba5b0f265da1bcc1933fe)\n' +
-      '- [mall整合RabbitMQ实现延迟消息](https://juejin.im/post/5cff98986fb9a07ed36ea139)\n' +
-      '- [mall整合OSS实现文件上传](https://juejin.im/post/5cff9944e51d4577555508a9)\n' +
+      '- dataqsiz指示了队列长度为6，即可缓存6个元素；\n' +
+      '- buf指向队列的内存，队列中还剩余两个元素；\n' +
+      '- qcount表示队列中还有两个元素；\n' +
+      '- sendx指示后续写入的数据存储的位置，取值[0, 6)；\n' +
+      '- recvx指示从该位置读取数据, 取值[0, 6)；\n' +
       '\n' +
-      '## 业务篇\n' +
-      '> 全面解析mall中使用的数据库表结构\n' +
+      '## 2.2 等待队列\n' +
+      '从channel读数据，如果channel缓冲区为空或者没有缓冲区，当前goroutine会被阻塞。\n' +
+      '向channel写数据，如果channel缓冲区已满或者没有缓冲区，当前goroutine会被阻塞。\n' +
       '\n' +
-      '- [mall数据库表结构概览](https://juejin.im/post/5d34684c6fb9a07ef562724b)\n' +
-      '- [商品模块数据库表解析（一）](https://juejin.im/post/5d385a7e518825680e4577ee)\n' +
-      '- [商品模块数据库表解析（二）](https://juejin.im/post/5d39ba2cf265da1bc23fbd26)\n' +
-      '- [订单模块数据库表解析（一）](https://juejin.im/post/5d4196fef265da03bd04fa31)\n' +
-      '- [订单模块数据库表解析（二）](https://juejin.im/post/5d46db2a5188255d1e013ca0)\n' +
-      '- [订单模块数据库表解析（三）](https://juejin.im/post/5d497f92e51d4561e0516a9d)\n' +
-      '- [营销模块数据库表解析（一）](https://juejin.im/post/5d5012856fb9a06ad45135a6)\n' +
-      '- [营销模块数据库表解析（二）](https://juejin.im/post/5d555c7ae51d453b386a6302)\n' +
-      '- [营销模块数据库表解析（三）](https://juejin.im/post/5d5bf6676fb9a06b0703c0c5)\n' +
+      '被阻塞的goroutine将会挂在channel的等待队列中：\n' +
+      '- 因读阻塞的goroutine会被向channel写入数据的goroutine唤醒；\n' +
+      '- 因写阻塞的goroutine会被从channel读数据的goroutine唤醒；\n' +
       '\n' +
-      '## 技术要点篇\n' +
-      '> mall中一些功能的技术要点解析\n' +
+      '下图展示了一个没有缓冲区的channel，有几个goroutine阻塞等待读数据：\n' +
       '\n' +
-      '- [MyBatis Generator使用过程中踩过的一个坑](https://juejin.im/post/5d107037e51d45599e019de8)\n' +
-      '- [SpringBoot应用中使用AOP记录接口访问日志](https://juejin.im/post/5d2001bb6fb9a07edf276593)\n' +
-      '- [SpringBoot应用整合ELK实现日志收集](https://juejin.im/post/5d2738a2f265da1bac404299)\n' +
-      '- [前后端分离项目，如何解决跨域问题](https://juejin.im/post/5d4c162351882560b9545358)\n' +
-      '- [Java 8都出那么久了，Stream API了解下？](https://juejin.im/post/5d6d2016e51d453c135c5b25)\n' +
-      '- [仅需四步，整合SpringSecurity+JWT实现登录认证！](https://juejin.im/post/5df0e79bf265da33dd2f52af)\n' +
+      '![](images/chan-02-wait_queue.png)\n' +
       '\n' +
-      '## 部署篇\n' +
-      '> mall开发及生产环境的搭建\n' +
+      '注意，一般情况下recvq和sendq至少有一个为空。只有一个例外，那就是同一个goroutine使用select语句向channel一边写数据，一边读数据。\n' +
       '\n' +
-      '- [mall在Windows环境下的部署](https://juejin.im/post/5d1362de51882551fe065b61)\n' +
-      '- [mall在Linux环境下的部署（基于Docker容器）](https://juejin.im/post/5d1802ab6fb9a07f0a2df5ae)\n' +
-      '- [mall在Linux环境下的部署（基于Docker Compose）](https://juejin.im/post/5d1c98d66fb9a07ebf4b8ad5)\n' +
-      '- [mall前端项目的安装与部署](https://juejin.im/post/5d2c7c6b518825076377d7b9)\n' +
-      '- [mall-swarm在Windows环境下的部署](https://juejin.im/post/5de3c1a35188256e855b6e54)\n' +
-      '- [mall-swarm在Linux环境下的部署（基于Docker容器）](https://juejin.im/post/5de65bffe51d4557f71a5ec1)\n' +
+      '## 2.3 类型信息\n' +
+      '一个channel只能传递一种类型的值，类型信息存储在hchan数据结构中。\n' +
+      '- elemtype代表类型，用于数据传递过程中的赋值；\n' +
+      '- elemsize代表类型大小，用于在buf中定位元素位置。\n' +
       '\n' +
+      '## 2.4 锁\n' +
+      '一个channel同时仅允许被一个goroutine读写，为简单起见，本章后续部分说明读写过程时不再涉及加锁和解锁。\n' +
       '\n' +
-      '## 进阶篇\n' +
-      '> 一套涵盖大部分核心组件使用的Spring Cloud教程，包括Spring Cloud Alibaba及分布式事务Seata，基于Spring Cloud Greenwich及SpringBoot 2.1.7\n' +
+      '# 3. channel读写\n' +
+      '## 3.1 创建channel\n' +
+      '创建channel的过程实际上是初始化hchan结构。其中类型信息和缓冲区长度由make语句传入，buf的大小则与元素大小和缓冲区长度共同决定。\n' +
       '\n' +
-      '- [Spring Cloud 整体架构概览](https://juejin.im/post/5d764f05e51d4561fb04bfd7)\n' +
-      '- [Spring Cloud Eureka：服务注册与发现](https://juejin.im/post/5d78cd53f265da03d55e8351)\n' +
-      '- [Spring Cloud Ribbon：负载均衡的服务调用](https://juejin.im/post/5d7f9006f265da03951a260c)\n' +
-      '- [Spring Cloud Hystrix：服务容错保护](https://juejin.im/post/5d822d27e51d45621479ad92)\n' +
-      '- [Hystrix Dashboard：断路器执行监控](https://juejin.im/post/5d88cb58f265da03e4679eff)\n' +
-      '- [Spring Cloud OpenFeign：基于Ribbon和Hystrix的声明式服务调用](https://juejin.im/post/5d9c85c3e51d45782c23fab6)\n' +
-      '- [Spring Cloud Zuul：API网关服务](https://juejin.im/post/5d9f2dea6fb9a04e3e724067)\n' +
-      '- [Spring Cloud Config：外部集中化配置管理](https://juejin.im/post/5da4709af265da5baa5b06ac)\n' +
-      '- [Spring Cloud Bus：消息总线](https://juejin.im/post/5da70d1351882509615bea34)\n' +
-      '- [Spring Cloud Sleuth：分布式请求链路跟踪](https://juejin.im/post/5dadb4d36fb9a04e02409a7d)\n' +
-      '- [Spring Cloud Consul：服务治理与配置中心](https://juejin.im/post/5db05582f265da4d4c20180f)\n' +
-      '- [Spring Cloud Gateway：新一代API网关服务](https://juejin.im/post/5db6eed6518825644076d0b6)\n' +
-      '- [Spring Boot Admin：微服务应用监控](https://juejin.im/post/5db98a2d518825649c730f81)\n' +
-      '- [Spring Cloud Security：Oauth2使用入门](https://juejin.im/post/5dc013bae51d456e817cec30)\n' +
-      '- [Spring Cloud Security：Oauth2结合JWT使用](https://juejin.im/post/5dc2bec6f265da4d4f65bebe)\n' +
-      '- [Spring Cloud Security：Oauth2实现单点登录](https://juejin.im/post/5dc95a675188256e040db43f)\n' +
-      '- [Spring Cloud Alibaba：Nacos 作为注册中心和配置中心使用](https://juejin.im/post/5dcbf7bc5188250d1f5a78ea)\n' +
-      '- [Spring Cloud Alibaba：Sentinel实现熔断与限流](https://juejin.im/post/5dd29bece51d4561e80f9053)\n' +
-      '- [使用Seata彻底解决Spring Cloud中的分布式事务问题](https://juejin.im/post/5dd53a9d5188255d35425a08)\n' +
-      '- [IDEA中创建和启动SpringBoot应用的正确姿势](https://juejin.im/post/5d8b69366fb9a04e3348b06c)\n' +
+      '创建channel的伪代码如下所示：\n' +
+      '```go\n' +
+      'func makechan(t *chantype, size int) *hchan {\n' +
+      '\tvar c *hchan\n' +
+      '\tc = new(hchan)\n' +
+      '\tc.buf = malloc(元素类型大小*size)\n' +
+      '\tc.elemsize = 元素类型大小\n' +
+      '\tc.elemtype = 元素类型\n' +
+      '\tc.dataqsiz = size\n' +
       '\n' +
-      '## 参考篇\n' +
-      '> mall相关技术的使用教程\n' +
+      '\treturn c\n' +
+      '}\n' +
+      '```\n' +
       '\n' +
-      '- [IDEA常用设置及推荐插件](https://juejin.im/post/5d0458085188256aa76bc678)\n' +
-      '- [开发者必备Mysql命令](https://juejin.im/post/5d00fd40f265da1bb67a11b3)\n' +
-      '- [开发者必备Linux命令](https://juejin.im/post/5d0253845188255e1305c741)\n' +
-      '- [Linux防火墙Firewall和Iptables的使用](https://juejin.im/post/5d0253fe6fb9a07edb39420d)\n' +
-      '- [Navicat实用功能：数据备份与结构同步](https://juejin.im/post/5d00fc865188255fc6384126)\n' +
-      '- [开发者必备Docker命令](https://juejin.im/post/5d0781f56fb9a07f014ef6be)\n' +
-      '- [使用Maven插件构建Docker镜像](https://juejin.im/post/5d08e3d26fb9a07ed8424488)\n' +
-      '- [使用DockerFile为SpringBoot应用构建Docker镜像](https://juejin.im/post/5d0a25b76fb9a07ed524a438)\n' +
-      '- [使用Docker Compose部署SpringBoot应用](https://juejin.im/user/5cf7c1d7f265da1bc07e28b7)\n' +
-      '- [Postman：API接口调试利器](https://juejin.im/post/5d5a9032e51d4561db5e3a4a)\n' +
-      '- [10分钟搭建自己的Git仓库](https://juejin.im/post/5d63d600e51d453c135c5af3)\n' +
-      '- [IDEA中的Git操作，看这一篇就够了！](https://juejin.im/post/5d667fc6e51d453b5d4d8da5)\n' +
-      '- [Hutool中那些常用的工具类和方法](https://juejin.im/post/5d6fb7b0e51d4561c67840de)\n' +
-      '- [虚拟机安装及使用Linux，看这一篇就够了！](https://juejin.im/post/5ddfd1665188256ec024cb7c)\n' +
-      '- [Nginx的这些妙用，你肯定有不知道的！](https://juejin.im/post/5dee499151882512444014eb)\n' +
+      '## 3.2 向channel写数据\n' +
+      '向一个channel中写数据简单过程如下：\n' +
+      '1. 如果等待接收队列recvq不为空，说明缓冲区中没有数据或者没有缓冲区，此时直接从recvq取出G,并把数据写入，最后把该G唤醒，结束发送过程；\n' +
+      '2. 如果缓冲区中有空余位置，将数据写入缓冲区，结束发送过程；\n' +
+      '3. 如果缓冲区中没有空余位置，将待发送数据写入G，将当前G加入sendq，进入睡眠，等待被读goroutine唤醒；\n' +
+      '\n' +
+      '简单流程图如下：\n' +
+      '\n' +
+      '![](images/chan-03-send_data.png)\n' +
+      '\n' +
+      '## 3.3 从channel读数据\n' +
+      '从一个channel读数据简单过程如下：\n' +
+      '1. 如果等待发送队列sendq不为空，且没有缓冲区，直接从sendq中取出G，把G中数据读出，最后把G唤醒，结束读取过程；\n' +
+      '2. 如果等待发送队列sendq不为空，此时说明缓冲区已满，从缓冲区中首部读出数据，把G中数据写入缓冲区尾部，把G唤醒，结束读取过程；\n' +
+      '3. 如果缓冲区中有数据，则从缓冲区取出数据，结束读取过程；\n' +
+      '4. 将当前goroutine加入recvq，进入睡眠，等待被写goroutine唤醒；\n' +
+      '\n' +
+      '简单流程图如下：\n' +
+      '\n' +
+      '![](images/chan-04-recieve_data.png)\n' +
       '\n' +
       '\n' +
-      '## 公众号\n' +
+      '## 3.4 关闭channel\n' +
+      '关闭channel时会把recvq中的G全部唤醒，本该写入G的数据位置为nil。把sendq中的G全部唤醒，但这些G会panic。\n' +
       '\n' +
-      'mall项目全套学习教程连载中，**关注公众号**第一时间获取。\n' +
+      '除此之外，panic出现的常见场景还有：\n' +
+      '1. 关闭值为nil的channel\n' +
+      '2. 关闭已经被关闭的channel\n' +
+      '3. 向已经关闭的channel写数据\n' +
       '\n' +
-      '![公众号图片](http://macro-oss.oss-cn-shenzhen.aliyuncs.com/mall/banner/qrcode_for_macrozheng_258.jpg)\n',
+      '# 4. 常见用法\n' +
+      '## 4.1 单向channel\n' +
+      '顾名思义，单向channel指只能用于发送或接收数据，实际上也没有单向channel。\n' +
+      '\n' +
+      '我们知道channel可以通过参数传递，所谓单向channel只是对channel的一种使用限制，这跟C语言使用const修饰函数参数为只读是一个道理。\n' +
+      '- func readChan(chanName <-chan int)： 通过形参限定函数内部只能从channel中读取数据\n' +
+      '- func writeChan(chanName chan<- int)： 通过形参限定函数内部只能向channel中写入数据\n' +
+      '\n' +
+      '一个简单的示例程序如下：\n' +
+      '```go\n' +
+      'func readChan(chanName <-chan int) {\n' +
+      '    <- chanName\n' +
+      '}\n' +
+      '\n' +
+      'func writeChan(chanName chan<- int) {\n' +
+      '    chanName <- 1\n' +
+      '}\n' +
+      '\n' +
+      'func main() {\n' +
+      '    var mychan = make(chan int, 10)\n' +
+      '\n' +
+      '    writeChan(mychan)\n' +
+      '    readChan(mychan)\n' +
+      '}\n' +
+      '```\n' +
+      'mychan是个正常的channel，而readChan()参数限制了传入的channel只能用来读，writeChan()参数限制了传入的channel只能用来写。\n' +
+      '\n' +
+      '## 4.2 select\n' +
+      '使用select可以监控多channel，比如监控多个channel，当其中某一个channel有数据时，就从其读出数据。\n' +
+      '\n' +
+      '一个简单的示例程序如下：\n' +
+      '```go\n' +
+      'package main\n' +
+      '\n' +
+      'import (\n' +
+      '    "fmt"\n' +
+      '    "time"\n' +
+      ')\n' +
+      '\n' +
+      'func addNumberToChan(chanName chan int) {\n' +
+      '    for {\n' +
+      '        chanName <- 1\n' +
+      '        time.Sleep(1 * time.Second)\n' +
+      '    }\n' +
+      '}\n' +
+      '\n' +
+      'func main() {\n' +
+      '    var chan1 = make(chan int, 10)\n' +
+      '    var chan2 = make(chan int, 10)\n' +
+      '\n' +
+      '    go addNumberToChan(chan1)\n' +
+      '    go addNumberToChan(chan2)\n' +
+      '\n' +
+      '    for {\n' +
+      '        select {\n' +
+      '        case e := <- chan1 :\n' +
+      '            fmt.Printf("Get element from chan1: %d\\n", e)\n' +
+      '        case e := <- chan2 :\n' +
+      '            fmt.Printf("Get element from chan2: %d\\n", e)\n' +
+      '        default:\n' +
+      '            fmt.Printf("No element in chan1 and chan2.\\n")\n' +
+      '            time.Sleep(1 * time.Second)\n' +
+      '        }\n' +
+      '    }\n' +
+      '}\n' +
+      '```\n' +
+      '程序中创建两个channel： chan1和chan2。函数addNumberToChan()函数会向两个channel中周期性写入数据。通过select可以监控两个channel，任意一个可读时就从其中读出数据。\n' +
+      '\n' +
+      '程序输出如下：\n' +
+      '```go\n' +
+      'D:\\SourceCode\\GoExpert\\src>go run main.go\n' +
+      'Get element from chan1: 1\n' +
+      'Get element from chan2: 1\n' +
+      'No element in chan1 and chan2.\n' +
+      'Get element from chan2: 1\n' +
+      'Get element from chan1: 1\n' +
+      'No element in chan1 and chan2.\n' +
+      'Get element from chan2: 1\n' +
+      'Get element from chan1: 1\n' +
+      'No element in chan1 and chan2.\n' +
+      '\n' +
+      '```\n' +
+      '从输出可见，从channel中读出数据的顺序是随机的，事实上select语句的多个case执行顺序是随机的，关于select的实现原理会有专门章节分析。\n' +
+      '\n' +
+      '通过这个示例想说的是：select的case语句读channel不会阻塞，尽管channel中没有数据。这是由于case语句编译后调用读channel时会明确传入不阻塞的参数，此时读不到数据时不会将当前goroutine加入到等待队列，而是直接返回。\n' +
+      '\n' +
+      '## 4.3 range\n' +
+      '通过range可以持续从channel中读出数据，好像在遍历一个数组一样，当channel中没有数据时会阻塞当前goroutine，与读channel时阻塞处理机制一样。\n' +
+      '\n' +
+      '```go\n' +
+      'func chanRange(chanName chan int) {\n' +
+      '    for e := range chanName {\n' +
+      '        fmt.Printf("Get element from chan: %d\\n", e)\n' +
+      '    }\n' +
+      '}\n' +
+      '```\n' +
+      '\n' +
+      '注意：如果向此channel写数据的goroutine退出时，系统检测到这种情况后会panic，否则range将会永久阻塞。\n',
     page_view: 20106,
     article_type: '创作集',
     created_at: '2019-08-06 12:12',
   },
   {
     id: 2,
-    title: '优雅地下载我的B站投币视频',
+    title: '1.2-slice.md',
     content:
-      '# mall学习教程\n' +
-      '<p>\n' +
-      '<a href="#公众号"><img src="http://macro-oss.oss-cn-shenzhen.aliyuncs.com/mall/badge/%E5%85%AC%E4%BC%97%E5%8F%B7-macrozheng-blue.svg" alt="公众号"></a>\n' +
-      '<a href="https://github.com/macrozheng/mall"><img src="http://macro-oss.oss-cn-shenzhen.aliyuncs.com/mall/badge/%E5%90%8E%E5%8F%B0%E9%A1%B9%E7%9B%AE-mall-blue.svg" alt="后台项目"></a>\n' +
-      '<a href="https://github.com/macrozheng/mall-admin-web"><img src="http://macro-oss.oss-cn-shenzhen.aliyuncs.com/mall/badge/%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE-mall--admin--web-green.svg" alt="前端项目"></a>\n' +
-      '</p>\n' +
+      '# 1. 前言\n' +
+      'Slice又称动态数组，依托数组实现，可以方便的进行扩容、传递等，实际使用中比数组更灵活。\n' +
       '\n' +
-      '## 简介\n' +
-      'mall学习教程，架构、业务、技术要点全方位解析。mall项目（25k+star）是一套电商系统，使用现阶段主流技术实现。\n' +
-      '涵盖了SpringBoot2.1.3、MyBatis3.4.6、Elasticsearch6.2.2、RabbitMQ3.7.15、Redis3.2、Mongodb3.2、Mysql5.7等技术，采用Docker容器化部署。\n' +
+      '正因为灵活，如果不了解其内部实现机制，有可能遭遇莫名的异常现象。Slice的实现原理很简单，本节试图根据真实的使用场景，在源码中总结实现原理。\n' +
       '\n' +
-      '## 项目地址\n' +
-      '- 后台项目：[https://github.com/macrozheng/mall](https://github.com/macrozheng/mall)\n' +
-      '- 前端项目：[https://github.com/macrozheng/mall-admin-web](https://github.com/macrozheng/mall-admin-web)\n' +
+      '# 2. 热身环节\n' +
+      '按照惯例，我们开始前先看几段代码用于检测对Slice的理解程度。\n' +
       '\n' +
-      '## 更好的阅读体验\n' +
-      '- 文档地址：[http://www.macrozheng.com](http://www.macrozheng.com)\n' +
-      '- 备用地址：[https://macrozheng.github.io/mall-learning](https://macrozheng.github.io/mall-learning)\n' +
+      '## 2.1 题目一\n' +
+      '下面程序输出什么？\n' +
+      '```go\n' +
+      'package main\n' +
       '\n' +
-      '## 序章\n' +
-      '- [mall架构及功能概览](https://juejin.im/post/5cf7c305e51d4510b71da5c5)\n' +
-      '- [mall学习所需知识点（推荐资料）](https://juejin.im/post/5cf7c3aef265da1ba84a7fdc)\n' +
+      'import (\n' +
+      '    "fmt"\n' +
+      ')\n' +
       '\n' +
-      '## 架构篇\n' +
-      '> 手把手教你搭建一个mall在使用的项目骨架\n' +
+      'func main() {\n' +
+      '    var array [10]int\n' +
       '\n' +
-      '- [mall整合SpringBoot+MyBatis搭建基本骨架](https://juejin.im/post/5cf7c4a7e51d4577790c1c50)\n' +
-      '- [mall整合Swagger-UI实现在线API文档](https://juejin.im/post/5cf9035cf265da1bb47d54f8)\n' +
-      '- [mall整合Redis实现缓存功能](https://juejin.im/post/5cf90e9ee51d454f6f16eba0)\n' +
-      '- [mall整合SpringSecurity和JWT实现认证和授权（一）](https://juejin.im/post/5cf90fa5e51d455d6d5357d3)\n' +
-      '- [mall整合SpringSecurity和JWT实现认证和授权（二）](https://juejin.im/post/5cfa0933f265da1b8f1ab2da)\n' +
-      '- [mall整合SpringTask实现定时任务](https://juejin.im/post/5cfa0ea16fb9a07eaf2b8261)\n' +
-      '- [mall整合Elasticsearch实现商品搜索](https://juejin.im/post/5cfba3e9f265da1b614fea60)\n' +
-      '- [mall整合Mongodb实现文档操作](https://juejin.im/post/5cfba5b0f265da1bcc1933fe)\n' +
-      '- [mall整合RabbitMQ实现延迟消息](https://juejin.im/post/5cff98986fb9a07ed36ea139)\n' +
-      '- [mall整合OSS实现文件上传](https://juejin.im/post/5cff9944e51d4577555508a9)\n' +
+      '    var slice = array[5:6]\n' +
       '\n' +
-      '## 业务篇\n' +
-      '> 全面解析mall中使用的数据库表结构\n' +
+      '    fmt.Println("lenth of slice: ", len(slice))\n' +
+      '    fmt.Println("capacity of slice: ", cap(slice))\n' +
+      '    fmt.Println(&slice[0] == &array[5])\n' +
+      '}\n' +
       '\n' +
-      '- [mall数据库表结构概览](https://juejin.im/post/5d34684c6fb9a07ef562724b)\n' +
-      '- [商品模块数据库表解析（一）](https://juejin.im/post/5d385a7e518825680e4577ee)\n' +
-      '- [商品模块数据库表解析（二）](https://juejin.im/post/5d39ba2cf265da1bc23fbd26)\n' +
-      '- [订单模块数据库表解析（一）](https://juejin.im/post/5d4196fef265da03bd04fa31)\n' +
-      '- [订单模块数据库表解析（二）](https://juejin.im/post/5d46db2a5188255d1e013ca0)\n' +
-      '- [订单模块数据库表解析（三）](https://juejin.im/post/5d497f92e51d4561e0516a9d)\n' +
-      '- [营销模块数据库表解析（一）](https://juejin.im/post/5d5012856fb9a06ad45135a6)\n' +
-      '- [营销模块数据库表解析（二）](https://juejin.im/post/5d555c7ae51d453b386a6302)\n' +
-      '- [营销模块数据库表解析（三）](https://juejin.im/post/5d5bf6676fb9a06b0703c0c5)\n' +
+      '```\n' +
+      '程序解释：\n' +
+      'main函数中定义了一个10个长度的整型数组array，然后定义了一个切片slice，切取数组的第6个元素，最后打印slice的长度和容量，判断切片的第一个元素和数组的第6个元素地址是否相等。\n' +
       '\n' +
-      '## 技术要点篇\n' +
-      '> mall中一些功能的技术要点解析\n' +
+      '参考答案：\n' +
+      'slice跟据数组array创建，与数组共享存储空间，slice起始位置是array[5]，长度为1，容量为5，slice[0]和array[5]地址相同。\n' +
       '\n' +
-      '- [MyBatis Generator使用过程中踩过的一个坑](https://juejin.im/post/5d107037e51d45599e019de8)\n' +
-      '- [SpringBoot应用中使用AOP记录接口访问日志](https://juejin.im/post/5d2001bb6fb9a07edf276593)\n' +
-      '- [SpringBoot应用整合ELK实现日志收集](https://juejin.im/post/5d2738a2f265da1bac404299)\n' +
-      '- [前后端分离项目，如何解决跨域问题](https://juejin.im/post/5d4c162351882560b9545358)\n' +
-      '- [Java 8都出那么久了，Stream API了解下？](https://juejin.im/post/5d6d2016e51d453c135c5b25)\n' +
-      '- [仅需四步，整合SpringSecurity+JWT实现登录认证！](https://juejin.im/post/5df0e79bf265da33dd2f52af)\n' +
+      '## 2.2 题目二\n' +
+      '下面程序输出什么？\n' +
+      '```go\n' +
+      'package main\n' +
       '\n' +
-      '## 部署篇\n' +
-      '> mall开发及生产环境的搭建\n' +
+      'import (\n' +
+      '    "fmt"\n' +
+      ')\n' +
       '\n' +
-      '- [mall在Windows环境下的部署](https://juejin.im/post/5d1362de51882551fe065b61)\n' +
-      '- [mall在Linux环境下的部署（基于Docker容器）](https://juejin.im/post/5d1802ab6fb9a07f0a2df5ae)\n' +
-      '- [mall在Linux环境下的部署（基于Docker Compose）](https://juejin.im/post/5d1c98d66fb9a07ebf4b8ad5)\n' +
-      '- [mall前端项目的安装与部署](https://juejin.im/post/5d2c7c6b518825076377d7b9)\n' +
-      '- [mall-swarm在Windows环境下的部署](https://juejin.im/post/5de3c1a35188256e855b6e54)\n' +
-      '- [mall-swarm在Linux环境下的部署（基于Docker容器）](https://juejin.im/post/5de65bffe51d4557f71a5ec1)\n' +
+      'func AddElement(slice []int, e int) []int {\n' +
+      '    return append(slice, e)\n' +
+      '}\n' +
       '\n' +
+      'func main() {\n' +
+      '    var slice []int\n' +
+      '    slice = append(slice, 1, 2, 3)\n' +
       '\n' +
-      '## 进阶篇\n' +
-      '> 一套涵盖大部分核心组件使用的Spring Cloud教程，包括Spring Cloud Alibaba及分布式事务Seata，基于Spring Cloud Greenwich及SpringBoot 2.1.7\n' +
+      '    newSlice := AddElement(slice, 4)\n' +
+      '    fmt.Println(&slice[0] == &newSlice[0])\n' +
+      '}\n' +
       '\n' +
-      '- [Spring Cloud 整体架构概览](https://juejin.im/post/5d764f05e51d4561fb04bfd7)\n' +
-      '- [Spring Cloud Eureka：服务注册与发现](https://juejin.im/post/5d78cd53f265da03d55e8351)\n' +
-      '- [Spring Cloud Ribbon：负载均衡的服务调用](https://juejin.im/post/5d7f9006f265da03951a260c)\n' +
-      '- [Spring Cloud Hystrix：服务容错保护](https://juejin.im/post/5d822d27e51d45621479ad92)\n' +
-      '- [Hystrix Dashboard：断路器执行监控](https://juejin.im/post/5d88cb58f265da03e4679eff)\n' +
-      '- [Spring Cloud OpenFeign：基于Ribbon和Hystrix的声明式服务调用](https://juejin.im/post/5d9c85c3e51d45782c23fab6)\n' +
-      '- [Spring Cloud Zuul：API网关服务](https://juejin.im/post/5d9f2dea6fb9a04e3e724067)\n' +
-      '- [Spring Cloud Config：外部集中化配置管理](https://juejin.im/post/5da4709af265da5baa5b06ac)\n' +
-      '- [Spring Cloud Bus：消息总线](https://juejin.im/post/5da70d1351882509615bea34)\n' +
-      '- [Spring Cloud Sleuth：分布式请求链路跟踪](https://juejin.im/post/5dadb4d36fb9a04e02409a7d)\n' +
-      '- [Spring Cloud Consul：服务治理与配置中心](https://juejin.im/post/5db05582f265da4d4c20180f)\n' +
-      '- [Spring Cloud Gateway：新一代API网关服务](https://juejin.im/post/5db6eed6518825644076d0b6)\n' +
-      '- [Spring Boot Admin：微服务应用监控](https://juejin.im/post/5db98a2d518825649c730f81)\n' +
-      '- [Spring Cloud Security：Oauth2使用入门](https://juejin.im/post/5dc013bae51d456e817cec30)\n' +
-      '- [Spring Cloud Security：Oauth2结合JWT使用](https://juejin.im/post/5dc2bec6f265da4d4f65bebe)\n' +
-      '- [Spring Cloud Security：Oauth2实现单点登录](https://juejin.im/post/5dc95a675188256e040db43f)\n' +
-      '- [Spring Cloud Alibaba：Nacos 作为注册中心和配置中心使用](https://juejin.im/post/5dcbf7bc5188250d1f5a78ea)\n' +
-      '- [Spring Cloud Alibaba：Sentinel实现熔断与限流](https://juejin.im/post/5dd29bece51d4561e80f9053)\n' +
-      '- [使用Seata彻底解决Spring Cloud中的分布式事务问题](https://juejin.im/post/5dd53a9d5188255d35425a08)\n' +
-      '- [IDEA中创建和启动SpringBoot应用的正确姿势](https://juejin.im/post/5d8b69366fb9a04e3348b06c)\n' +
+      '```\n' +
+      '程序解释：\n' +
+      '函数AddElement()接受一个切片和一个元素，把元素append进切片中，并返回切片。main()函数中定义一个切片，并向切片中append 3个元素，接着调用AddElement()继续向切片append进第4个元素同时定义一个新的切片newSlice。最后判断新切片newSlice与旧切片slice是否共用一块存储空间。\n' +
       '\n' +
-      '## 参考篇\n' +
-      '> mall相关技术的使用教程\n' +
+      '参考答案：\n' +
+      'append函数执行时会判断切片容量是否能够存放新增元素，如果不能，则会重新申请存储空间，新存储空间将是原来的2倍或1.25倍（取决于扩展原空间大小），本例中实际执行了两次append操作，第一次空间增长到4，所以第二次append不会再扩容，所以新旧两个切片将共用一块存储空间。程序会输出"true"。\n' +
       '\n' +
-      '- [IDEA常用设置及推荐插件](https://juejin.im/post/5d0458085188256aa76bc678)\n' +
-      '- [开发者必备Mysql命令](https://juejin.im/post/5d00fd40f265da1bb67a11b3)\n' +
-      '- [开发者必备Linux命令](https://juejin.im/post/5d0253845188255e1305c741)\n' +
-      '- [Linux防火墙Firewall和Iptables的使用](https://juejin.im/post/5d0253fe6fb9a07edb39420d)\n' +
-      '- [Navicat实用功能：数据备份与结构同步](https://juejin.im/post/5d00fc865188255fc6384126)\n' +
-      '- [开发者必备Docker命令](https://juejin.im/post/5d0781f56fb9a07f014ef6be)\n' +
-      '- [使用Maven插件构建Docker镜像](https://juejin.im/post/5d08e3d26fb9a07ed8424488)\n' +
-      '- [使用DockerFile为SpringBoot应用构建Docker镜像](https://juejin.im/post/5d0a25b76fb9a07ed524a438)\n' +
-      '- [使用Docker Compose部署SpringBoot应用](https://juejin.im/user/5cf7c1d7f265da1bc07e28b7)\n' +
-      '- [Postman：API接口调试利器](https://juejin.im/post/5d5a9032e51d4561db5e3a4a)\n' +
-      '- [10分钟搭建自己的Git仓库](https://juejin.im/post/5d63d600e51d453c135c5af3)\n' +
-      '- [IDEA中的Git操作，看这一篇就够了！](https://juejin.im/post/5d667fc6e51d453b5d4d8da5)\n' +
-      '- [Hutool中那些常用的工具类和方法](https://juejin.im/post/5d6fb7b0e51d4561c67840de)\n' +
-      '- [虚拟机安装及使用Linux，看这一篇就够了！](https://juejin.im/post/5ddfd1665188256ec024cb7c)\n' +
-      '- [Nginx的这些妙用，你肯定有不知道的！](https://juejin.im/post/5dee499151882512444014eb)\n' +
+      '## 2.3 题目三\n' +
+      '下面程序由Golang源码改编而来，程序输出什么？\n' +
+      '```go\n' +
+      'package main\n' +
       '\n' +
+      'import (\n' +
+      '    "fmt"\n' +
+      ')\n' +
       '\n' +
-      '## 公众号\n' +
+      'func main() {\n' +
+      '    orderLen := 5\n' +
+      '    order := make([]uint16, 2 * orderLen)\n' +
       '\n' +
-      'mall项目全套学习教程连载中，**关注公众号**第一时间获取。\n' +
+      '    pollorder := order[:orderLen:orderLen]\n' +
+      '    lockorder := order[orderLen:][:orderLen:orderLen]\n' +
       '\n' +
-      '![公众号图片](http://macro-oss.oss-cn-shenzhen.aliyuncs.com/mall/banner/qrcode_for_macrozheng_258.jpg)\n',
+      '    fmt.Println("len(pollorder) = ", len(pollorder))\n' +
+      '    fmt.Println("cap(pollorder) = ", cap(pollorder))\n' +
+      '    fmt.Println("len(lockorder) = ", len(lockorder))\n' +
+      '    fmt.Println("cap(lockorder) = ", cap(lockorder))\n' +
+      '}\n' +
+      '```\n' +
+      '程序解释：\n' +
+      '该段程序源自select的实现代码，程序中定义一个长度为10的切片order，pollorder和lockorder分别是对order切片做了order[low:high:max]操作生成的切片，最后程序分别打印pollorder和lockorder的容量和长度。\n' +
+      '\n' +
+      '参考答案：\n' +
+      'order[low:high:max]操作意思是对order进行切片，新切片范围是[low, high),新切片容量是max。order长度为2倍的orderLen，pollorder切片指的是order的前半部分切片，lockorder指的是order的后半部分切片，即原order分成了两段。所以，pollorder和lockerorder的长度和容量都是orderLen，即5。\n' +
+      '\n' +
+      '# 3. Slice实现原理\n' +
+      'Slice依托数组实现，底层数组对用户屏蔽，在底层数组容量不足时可以实现自动重分配并生成新的Slice。\n' +
+      '接下来按照实际使用场景分别介绍其实现机制。\n' +
+      '\n' +
+      '## 3.1 Slice数据结构\n' +
+      '源码包中`src/runtime/slice.go:slice`定义了Slice的数据结构：\n' +
+      '```go\n' +
+      'type slice struct {\n' +
+      '\tarray unsafe.Pointer\n' +
+      '\tlen   int\n' +
+      '\tcap   int\n' +
+      '}\n' +
+      '```\n' +
+      '从数据结构看Slice很清晰, array指针指向底层数组，len表示切片长度，cap表示底层数组容量。\n' +
+      '\n' +
+      '## 3.2 使用make创建Slice\n' +
+      '使用make来创建Slice时，可以同时指定长度和容量，创建时底层会分配一个数组，数组的长度即容量。\n' +
+      '\n' +
+      '例如，语句`slice := make([]int, 5, 10)`所创建的Slice，结构如下图所示：\n' +
+      '\n' +
+      '![](images/slice-01-make_slice.png)\n' +
+      '\n' +
+      '该Slice长度为5，即可以使用下标slice[0] ~ slice[4]来操作里面的元素，capacity为10，表示后续向slice添加新的元素时可以不必重新分配内存，直接使用预留内存即可。\n' +
+      '\n' +
+      '## 3.3 使用数组创建Slice\n' +
+      '使用数组来创建Slice时，Slice将与原数组共用一部分内存。\n' +
+      '\n' +
+      '例如，语句`slice := array[5:7]`所创建的Slice，结构如下图所示：\n' +
+      '\n' +
+      '![](images/slice-02-create_slice_from_array.png)\n' +
+      '\n' +
+      '切片从数组array[5]开始，到数组array[7]结束（不含array[7]），即切片长度为2，数组后面的内容都作为切片的预留内存，即capacity为5。\n' +
+      '\n' +
+      '数组和切片操作可能作用于同一块内存，这也是使用过程中需要注意的地方。\n' +
+      '\n' +
+      '## 3.4 Slice 扩容\n' +
+      '使用append向Slice追加元素时，如果Slice空间不足，将会触发Slice扩容，扩容实际上是重新分配一块更大的内存，将原Slice数据拷贝进新Slice，然后返回新Slice，扩容后再将数据追加进去。\n' +
+      '\n' +
+      '例如，当向一个capacity为5，且length也为5的Slice再次追加1个元素时，就会发生扩容，如下图所示：\n' +
+      '\n' +
+      '![](images/slice-03-slice_expand.png)\n' +
+      '\n' +
+      '扩容操作只关心容量，会把原Slice数据拷贝到新Slice，追加数据由append在扩容结束后完成。上图可见，扩容后新的Slice长度仍然是5，但容量由5提升到了10，原Slice的数据也都拷贝到了新Slice指向的数组中。\n' +
+      '\n' +
+      '扩容容量的选择遵循以下规则：\n' +
+      '- 如果原Slice容量小于1024，则新Slice容量将扩大为原来的2倍；\n' +
+      '- 如果原Slice容量大于等于1024，则新Slice容量将扩大为原来的1.25倍；\n' +
+      '\n' +
+      '使用append()向Slice添加一个元素的实现步骤如下：\n' +
+      '1. 假如Slice容量够用，则将新元素追加进去，Slice.len++，返回原Slice\n' +
+      '2. 原Slice容量不够，则将Slice先扩容，扩容后得到新Slice\n' +
+      '3. 将新元素追加进新Slice，Slice.len++，返回新的Slice。\n' +
+      '\n' +
+      '## 3.5 Slice Copy\n' +
+      '使用copy()内置函数拷贝两个切片时，会将源切片的数据逐个拷贝到目的切片指向的数组中，拷贝数量取两个切片长度的最小值。\n' +
+      '\n' +
+      '例如长度为10的切片拷贝到长度为5的切片时，将会拷贝5个元素。\n' +
+      '\n' +
+      '也就是说，copy过程中不会发生扩容。\n' +
+      '\n' +
+      '## 3.5 特殊切片\n' +
+      '跟据数组或切片生成新的切片一般使用`slice := array[start:end]`方式，这种新生成的切片并没有指定切片的容量，实际上新切片的容量是从start开始直至array的结束。\n' +
+      '\n' +
+      '比如下面两个切片，长度和容量都是一致的，使用共同的内存地址：\n' +
+      '```go\n' +
+      'sliceA := make([]int, 5, 10)\n' +
+      'sliceB := sliceA[0:5]\n' +
+      '```\n' +
+      '\n' +
+      '根据数组或切片生成切片还有另一种写法，即切片同时也指定容量，即slice[start:end:cap], 其中cap即为新切片的容量，当然容量不能超过原切片实际值，如下所示：\n' +
+      '```go\n' +
+      '    sliceA := make([]int, 5, 10)  //length = 5; capacity = 10\n' +
+      '    sliceB := sliceA[0:5]         //length = 5; capacity = 10\n' +
+      '    sliceC := sliceA[0:5:5]       //length = 5; capacity = 5\n' +
+      '```\n' +
+      '这切片方法不常见，在Golang源码里能够见到，不过非常利于切片的理解。\n' +
+      '\n' +
+      '# 4. 编程Tips\n' +
+      '- 创建切片时可跟据实际需要预分配容量，尽量避免追加过程中扩容操作，有利于提升性能；\n' +
+      '- 切片拷贝时需要判断实际拷贝的元素个数\n' +
+      '- 谨慎使用多个切片操作同一个数组，以防读写冲突\n' +
+      '\n' +
+      '# 5. Slice总结\n' +
+      '- 每个切片都指向一个底层数组\n' +
+      '- 每个切片都保存了当前切片的长度、底层数组可用容量\n' +
+      '- 使用len()计算切片长度时间复杂度为O(1)，不需要遍历切片\n' +
+      '- 使用cap()计算切片容量时间复杂度为O(1)，不需要遍历切片\n' +
+      '- 通过函数传递切片时，不会拷贝整个切片，因为切片本身只是个结构体而已\n' +
+      '- 使用append()向切片追加元素时有可能触发扩容，扩容后将会生成新的切片\n',
     page_view: 14873,
     article_type: '创作集',
     created_at: '2019-08-06 12:12',
@@ -260,7 +405,9 @@ const fakeArticles = [
 ];
 
 function getFakeArticleItem(req: Request, res: Response) {
-  return res.json(fakeArticles[Math.round(Math.random() * (fakeArticles.length - 1))]);
+  const { url } = req;
+  const params = parse(url, true).query as any;
+  return res.json(fakeArticles[params.articleId % fakeArticles.length]);
 }
 
 export default {
