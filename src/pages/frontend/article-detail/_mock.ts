@@ -5,7 +5,126 @@ const fakeArticles = [
     id: 1,
     title: 'RSSHub Radar — 订阅一个 RSS 源不应该这么难',
     content:
-      '<p><img src="https://diygod.me/images/rsshub-radar5.jpg" alt="" data-action="zoom"></p><blockquote><p>如果你问我，RSSHub 能否改变 RSS 的命运，我也不晓得，但我晓得，不认命，就是 RSSHub 的命。 ——《哪吒之魔童降世》</p></blockquote><p>如果你还不知道 RSS：<a href="https://diygod.me/ohmyrss/">《我有特别的 RSS 使用技巧》</a><br>如果你还不知道 RSSHub：<a href="https://sspai.com/post/47100" target="_blank" rel="noopener">《通过 RSSHub 订阅不支持 RSS 的网站》</a></p><p>首先最大的 respect 献给 RSSHub 的 <a href="https://docs.rsshub.app/#contributors" target="_blank" rel="noopener">244 名参与者</a></p><h2 id="订阅一个-RSS-源太难了"><a href="#订阅一个-RSS-源太难了" class="headerlink" title="订阅一个 RSS 源太难了"></a>订阅一个 RSS 源太难了</h2><p>首先需要网站提供了 RSS（这一前提通常就无法满足）；然后我们要随缘在页面中找到 RSS 链接；然后复制链接、打开如 Feedly Inoreader 的 RSS 服务、点击添加订阅、粘贴链接、添加</p><p>看，顺利订阅一个 RSS 源需要天时（随缘找到了 RSS）地利（网站提供了 RSS）人和（不因为订阅步骤过于麻烦而中途放弃），缺一不可</p><p>都 9102 年了，世界不应该这样</p><a id="more"></a><h2 id="解决这个问题"><a href="#解决这个问题" class="headerlink" title="解决这个问题"></a>解决这个问题</h2><p>为了解决这个问题，RSSHub Radar 诞生了</p><p><a href="https://chrome.google.com/webstore/detail/rsshub-radar/kefjpfngnndepjbopdmoebkipbgkggaa" target="_blank" rel="noopener">Chrome Web Store</a> | <a href="https://github.com/DIYgod/RSSHub-Radar" target="_blank" rel="noopener">GitHub</a></p><p>RSSHub Radar 是 RSSHub 的衍生项目，她是一个可以帮助你快速发现和订阅当前网站 RSS 和 RSSHub 的浏览器扩展</p><p><img src="/images/rsshub-radar1.jpg" alt="" data-action="zoom"></p><p>使用很简单，我们在进入一个新页面时，RSSHub Radar 会<strong>自动检测</strong>当前页面有没有 RSS 和 RSSHub 支持，检测到则会在右下角显示一个角标，如果我们想订阅当前页面的 RSS，点击扩展图标，会弹出一个列表，如图所示，列表有三项内容：<strong>当前页面上的 RSS、适用于当前页面的 RSSHub、适用于当前网站的 RSSHub</strong>，你可以选择复制链接或<strong>一键订阅</strong>到 Feedly Inoreader TinyTinyRSS</p><p><img src="/images/rsshub-radar2.jpg" alt="" data-action="zoom"></p><p>设置页允许你使用自建的 RSSHub 域名、设置快捷键、立即更新规则、选择一键订阅到 TinyTinyRSS 还是 Feedly Inoreader、选择是否开启角标提醒等</p><p><img src="/images/rsshub-radar3.jpg" alt="" data-action="zoom"></p><p>支持列表列出了当前支持的 RSSHub 规则</p><h2 id="RSSHub-Radar-是如何工作的"><a href="#RSSHub-Radar-是如何工作的" class="headerlink" title="RSSHub Radar 是如何工作的"></a>RSSHub Radar 是如何工作的</h2><p>RSSHub Radar 是开源的，你可以直接去 <a href="https://github.com/DIYgod/RSSHub-Radar" target="_blank" rel="noopener">GitHub</a> 看源码</p><p>当我们进入一个新页面时，RSSHub Radar 开始检测当前页面的 RSS 和 RSSHub</p><p><strong>当前页面自带的 RSS</strong></p><p>分析页面中的每个链接显然是不现实的，好在标准中指定了一种特殊 MIME 类型的 link 标签来指明 RSS 链接，<code>link[type="application/rss+xml"]</code> 和 <code>link[type="application/atom+xml"]</code>，RSSHub Radar 正是通过这个标签来检测页面是否有自带 RSS，具体实现在<a href="https://github.com/DIYgod/RSSHub-Radar/blob/master/src/js/content/utils.js#L14" target="_blank" rel="noopener">这里</a></p><p><strong>适用于当前页面的 RSSHub</strong></p><p>使用<a href="https://github.com/DIYgod/RSSHub/blob/master/assets/radar-rules.js" target="_blank" rel="noopener">给定规则</a>，根据当前页面的 URL 或 DOM 来获取 RSSHub 链接，规则各个字段的具体含义见<a href="https://docs.rsshub.app/joinus/#%E6%8F%90%E4%BA%A4%E6%96%B0%E7%9A%84-rsshub-radar-%E8%A7%84%E5%88%99" target="_blank" rel="noopener">文档</a>，具体实现在<a href="https://github.com/DIYgod/RSSHub-Radar/blob/master/src/js/background/utils.js#L111" target="_blank" rel="noopener">这里</a></p><p>每隔 5 个小时从 GitHub 远程更新一次规则</p><p><strong>一键订阅</strong></p><p>Feedly Inoreader TinyTinyRSS 都提供了用于订阅的接口，不同的是 Feedly 需要进入页面确认一下，而另外两个会直接订阅上</p><p>比如访问这个 URL 可以快速使用 Feedly 订阅我的博客（需要点 FOLLOW 确认）：<br><a href="https://feedly.com/i/subscription/feed/https://diygod.me/atom.xml" target="_blank" rel="noopener">https://feedly.com/i/subscription/feed/https://diygod.me/atom.xml</a></p><p>这个 URL 可以快速使用 Inoreader 订阅我的博客：<br><a href="https://www.inoreader.com/feed/https://diygod.me/atom.xml" target="_blank" rel="noopener">https://www.inoreader.com/feed/https://diygod.me/atom.xml</a></p><h2 id="参与我们"><a href="#参与我们" class="headerlink" title="参与我们"></a>参与我们</h2><p>如果你对 RSSHub 感兴趣，欢迎<a href="https://docs.rsshub.app/joinus/" target="_blank" rel="noopener">参与</a>或<a href="https://docs.rsshub.app/support/" target="_blank" rel="noopener">支持</a>我们</p><p>最后祝哪吒票房破 50 亿，还没看的一定要去看嗷！</p><p><img src="/images/rsshub-radar4.gif" alt="" data-action="zoom"></p>',
+      '# mall学习教程\n' +
+      '<p>\n' +
+      '<a href="#公众号"><img src="http://macro-oss.oss-cn-shenzhen.aliyuncs.com/mall/badge/%E5%85%AC%E4%BC%97%E5%8F%B7-macrozheng-blue.svg" alt="公众号"></a>\n' +
+      '<a href="https://github.com/macrozheng/mall"><img src="http://macro-oss.oss-cn-shenzhen.aliyuncs.com/mall/badge/%E5%90%8E%E5%8F%B0%E9%A1%B9%E7%9B%AE-mall-blue.svg" alt="后台项目"></a>\n' +
+      '<a href="https://github.com/macrozheng/mall-admin-web"><img src="http://macro-oss.oss-cn-shenzhen.aliyuncs.com/mall/badge/%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE-mall--admin--web-green.svg" alt="前端项目"></a>\n' +
+      '</p>\n' +
+      '\n' +
+      '## 简介\n' +
+      'mall学习教程，架构、业务、技术要点全方位解析。mall项目（25k+star）是一套电商系统，使用现阶段主流技术实现。\n' +
+      '涵盖了SpringBoot2.1.3、MyBatis3.4.6、Elasticsearch6.2.2、RabbitMQ3.7.15、Redis3.2、Mongodb3.2、Mysql5.7等技术，采用Docker容器化部署。\n' +
+      '\n' +
+      '## 项目地址\n' +
+      '- 后台项目：[https://github.com/macrozheng/mall](https://github.com/macrozheng/mall)\n' +
+      '- 前端项目：[https://github.com/macrozheng/mall-admin-web](https://github.com/macrozheng/mall-admin-web)\n' +
+      '\n' +
+      '## 更好的阅读体验\n' +
+      '- 文档地址：[http://www.macrozheng.com](http://www.macrozheng.com)\n' +
+      '- 备用地址：[https://macrozheng.github.io/mall-learning](https://macrozheng.github.io/mall-learning)\n' +
+      '\n' +
+      '## 序章\n' +
+      '- [mall架构及功能概览](https://juejin.im/post/5cf7c305e51d4510b71da5c5)\n' +
+      '- [mall学习所需知识点（推荐资料）](https://juejin.im/post/5cf7c3aef265da1ba84a7fdc)\n' +
+      '\n' +
+      '## 架构篇\n' +
+      '> 手把手教你搭建一个mall在使用的项目骨架\n' +
+      '\n' +
+      '- [mall整合SpringBoot+MyBatis搭建基本骨架](https://juejin.im/post/5cf7c4a7e51d4577790c1c50)\n' +
+      '- [mall整合Swagger-UI实现在线API文档](https://juejin.im/post/5cf9035cf265da1bb47d54f8)\n' +
+      '- [mall整合Redis实现缓存功能](https://juejin.im/post/5cf90e9ee51d454f6f16eba0)\n' +
+      '- [mall整合SpringSecurity和JWT实现认证和授权（一）](https://juejin.im/post/5cf90fa5e51d455d6d5357d3)\n' +
+      '- [mall整合SpringSecurity和JWT实现认证和授权（二）](https://juejin.im/post/5cfa0933f265da1b8f1ab2da)\n' +
+      '- [mall整合SpringTask实现定时任务](https://juejin.im/post/5cfa0ea16fb9a07eaf2b8261)\n' +
+      '- [mall整合Elasticsearch实现商品搜索](https://juejin.im/post/5cfba3e9f265da1b614fea60)\n' +
+      '- [mall整合Mongodb实现文档操作](https://juejin.im/post/5cfba5b0f265da1bcc1933fe)\n' +
+      '- [mall整合RabbitMQ实现延迟消息](https://juejin.im/post/5cff98986fb9a07ed36ea139)\n' +
+      '- [mall整合OSS实现文件上传](https://juejin.im/post/5cff9944e51d4577555508a9)\n' +
+      '\n' +
+      '## 业务篇\n' +
+      '> 全面解析mall中使用的数据库表结构\n' +
+      '\n' +
+      '- [mall数据库表结构概览](https://juejin.im/post/5d34684c6fb9a07ef562724b)\n' +
+      '- [商品模块数据库表解析（一）](https://juejin.im/post/5d385a7e518825680e4577ee)\n' +
+      '- [商品模块数据库表解析（二）](https://juejin.im/post/5d39ba2cf265da1bc23fbd26)\n' +
+      '- [订单模块数据库表解析（一）](https://juejin.im/post/5d4196fef265da03bd04fa31)\n' +
+      '- [订单模块数据库表解析（二）](https://juejin.im/post/5d46db2a5188255d1e013ca0)\n' +
+      '- [订单模块数据库表解析（三）](https://juejin.im/post/5d497f92e51d4561e0516a9d)\n' +
+      '- [营销模块数据库表解析（一）](https://juejin.im/post/5d5012856fb9a06ad45135a6)\n' +
+      '- [营销模块数据库表解析（二）](https://juejin.im/post/5d555c7ae51d453b386a6302)\n' +
+      '- [营销模块数据库表解析（三）](https://juejin.im/post/5d5bf6676fb9a06b0703c0c5)\n' +
+      '\n' +
+      '## 技术要点篇\n' +
+      '> mall中一些功能的技术要点解析\n' +
+      '\n' +
+      '- [MyBatis Generator使用过程中踩过的一个坑](https://juejin.im/post/5d107037e51d45599e019de8)\n' +
+      '- [SpringBoot应用中使用AOP记录接口访问日志](https://juejin.im/post/5d2001bb6fb9a07edf276593)\n' +
+      '- [SpringBoot应用整合ELK实现日志收集](https://juejin.im/post/5d2738a2f265da1bac404299)\n' +
+      '- [前后端分离项目，如何解决跨域问题](https://juejin.im/post/5d4c162351882560b9545358)\n' +
+      '- [Java 8都出那么久了，Stream API了解下？](https://juejin.im/post/5d6d2016e51d453c135c5b25)\n' +
+      '- [仅需四步，整合SpringSecurity+JWT实现登录认证！](https://juejin.im/post/5df0e79bf265da33dd2f52af)\n' +
+      '\n' +
+      '## 部署篇\n' +
+      '> mall开发及生产环境的搭建\n' +
+      '\n' +
+      '- [mall在Windows环境下的部署](https://juejin.im/post/5d1362de51882551fe065b61)\n' +
+      '- [mall在Linux环境下的部署（基于Docker容器）](https://juejin.im/post/5d1802ab6fb9a07f0a2df5ae)\n' +
+      '- [mall在Linux环境下的部署（基于Docker Compose）](https://juejin.im/post/5d1c98d66fb9a07ebf4b8ad5)\n' +
+      '- [mall前端项目的安装与部署](https://juejin.im/post/5d2c7c6b518825076377d7b9)\n' +
+      '- [mall-swarm在Windows环境下的部署](https://juejin.im/post/5de3c1a35188256e855b6e54)\n' +
+      '- [mall-swarm在Linux环境下的部署（基于Docker容器）](https://juejin.im/post/5de65bffe51d4557f71a5ec1)\n' +
+      '\n' +
+      '\n' +
+      '## 进阶篇\n' +
+      '> 一套涵盖大部分核心组件使用的Spring Cloud教程，包括Spring Cloud Alibaba及分布式事务Seata，基于Spring Cloud Greenwich及SpringBoot 2.1.7\n' +
+      '\n' +
+      '- [Spring Cloud 整体架构概览](https://juejin.im/post/5d764f05e51d4561fb04bfd7)\n' +
+      '- [Spring Cloud Eureka：服务注册与发现](https://juejin.im/post/5d78cd53f265da03d55e8351)\n' +
+      '- [Spring Cloud Ribbon：负载均衡的服务调用](https://juejin.im/post/5d7f9006f265da03951a260c)\n' +
+      '- [Spring Cloud Hystrix：服务容错保护](https://juejin.im/post/5d822d27e51d45621479ad92)\n' +
+      '- [Hystrix Dashboard：断路器执行监控](https://juejin.im/post/5d88cb58f265da03e4679eff)\n' +
+      '- [Spring Cloud OpenFeign：基于Ribbon和Hystrix的声明式服务调用](https://juejin.im/post/5d9c85c3e51d45782c23fab6)\n' +
+      '- [Spring Cloud Zuul：API网关服务](https://juejin.im/post/5d9f2dea6fb9a04e3e724067)\n' +
+      '- [Spring Cloud Config：外部集中化配置管理](https://juejin.im/post/5da4709af265da5baa5b06ac)\n' +
+      '- [Spring Cloud Bus：消息总线](https://juejin.im/post/5da70d1351882509615bea34)\n' +
+      '- [Spring Cloud Sleuth：分布式请求链路跟踪](https://juejin.im/post/5dadb4d36fb9a04e02409a7d)\n' +
+      '- [Spring Cloud Consul：服务治理与配置中心](https://juejin.im/post/5db05582f265da4d4c20180f)\n' +
+      '- [Spring Cloud Gateway：新一代API网关服务](https://juejin.im/post/5db6eed6518825644076d0b6)\n' +
+      '- [Spring Boot Admin：微服务应用监控](https://juejin.im/post/5db98a2d518825649c730f81)\n' +
+      '- [Spring Cloud Security：Oauth2使用入门](https://juejin.im/post/5dc013bae51d456e817cec30)\n' +
+      '- [Spring Cloud Security：Oauth2结合JWT使用](https://juejin.im/post/5dc2bec6f265da4d4f65bebe)\n' +
+      '- [Spring Cloud Security：Oauth2实现单点登录](https://juejin.im/post/5dc95a675188256e040db43f)\n' +
+      '- [Spring Cloud Alibaba：Nacos 作为注册中心和配置中心使用](https://juejin.im/post/5dcbf7bc5188250d1f5a78ea)\n' +
+      '- [Spring Cloud Alibaba：Sentinel实现熔断与限流](https://juejin.im/post/5dd29bece51d4561e80f9053)\n' +
+      '- [使用Seata彻底解决Spring Cloud中的分布式事务问题](https://juejin.im/post/5dd53a9d5188255d35425a08)\n' +
+      '- [IDEA中创建和启动SpringBoot应用的正确姿势](https://juejin.im/post/5d8b69366fb9a04e3348b06c)\n' +
+      '\n' +
+      '## 参考篇\n' +
+      '> mall相关技术的使用教程\n' +
+      '\n' +
+      '- [IDEA常用设置及推荐插件](https://juejin.im/post/5d0458085188256aa76bc678)\n' +
+      '- [开发者必备Mysql命令](https://juejin.im/post/5d00fd40f265da1bb67a11b3)\n' +
+      '- [开发者必备Linux命令](https://juejin.im/post/5d0253845188255e1305c741)\n' +
+      '- [Linux防火墙Firewall和Iptables的使用](https://juejin.im/post/5d0253fe6fb9a07edb39420d)\n' +
+      '- [Navicat实用功能：数据备份与结构同步](https://juejin.im/post/5d00fc865188255fc6384126)\n' +
+      '- [开发者必备Docker命令](https://juejin.im/post/5d0781f56fb9a07f014ef6be)\n' +
+      '- [使用Maven插件构建Docker镜像](https://juejin.im/post/5d08e3d26fb9a07ed8424488)\n' +
+      '- [使用DockerFile为SpringBoot应用构建Docker镜像](https://juejin.im/post/5d0a25b76fb9a07ed524a438)\n' +
+      '- [使用Docker Compose部署SpringBoot应用](https://juejin.im/user/5cf7c1d7f265da1bc07e28b7)\n' +
+      '- [Postman：API接口调试利器](https://juejin.im/post/5d5a9032e51d4561db5e3a4a)\n' +
+      '- [10分钟搭建自己的Git仓库](https://juejin.im/post/5d63d600e51d453c135c5af3)\n' +
+      '- [IDEA中的Git操作，看这一篇就够了！](https://juejin.im/post/5d667fc6e51d453b5d4d8da5)\n' +
+      '- [Hutool中那些常用的工具类和方法](https://juejin.im/post/5d6fb7b0e51d4561c67840de)\n' +
+      '- [虚拟机安装及使用Linux，看这一篇就够了！](https://juejin.im/post/5ddfd1665188256ec024cb7c)\n' +
+      '- [Nginx的这些妙用，你肯定有不知道的！](https://juejin.im/post/5dee499151882512444014eb)\n' +
+      '\n' +
+      '\n' +
+      '## 公众号\n' +
+      '\n' +
+      'mall项目全套学习教程连载中，**关注公众号**第一时间获取。\n' +
+      '\n' +
+      '![公众号图片](http://macro-oss.oss-cn-shenzhen.aliyuncs.com/mall/banner/qrcode_for_macrozheng_258.jpg)\n',
     page_view: 20106,
     article_type: '创作集',
     created_at: '2019-08-06 12:12',
@@ -14,7 +133,126 @@ const fakeArticles = [
     id: 2,
     title: '优雅地下载我的B站投币视频',
     content:
-      '<style>twitter-widget{margin:0 auto!important}</style><twitter-widget class="twitter-tweet twitter-tweet-rendered" id="twitter-widget-1" style="position: static; visibility: visible; display: block; transform: rotate(0deg); max-width: 100%; width: 500px; min-width: 220px; margin-top: 10px; margin-bottom: 10px;" data-tweet-id="1131898671111450625"></twitter-widget><p>&nbsp;</p><p>下载B站视频很简单，you-get 一行命令的事，但我已经懒到命令都不想输了，如果投币之后 NAS 可以自己去下载就好了<a id="more"></a></p><h2 id="设想"><a href="#设想" class="headerlink" title="设想"></a>设想</h2><p>整个设想是这样的：投币操作 -&gt; RSS 更新 -&gt; IFTTT 触发 Webhook -&gt; 服务器下载</p><p>投币到 RSS 更新可以直接用 <a href="https://docs.rsshub.app/social-media.html#up-%E4%B8%BB%E6%8A%95%E5%B8%81%E8%A7%86%E9%A2%91" target="_blank" rel="noopener">RSSHub</a> 实现，RSS 更新到触发 Webhook 也可以直接在 IFTTT 里配置，整个多米诺骨牌就只缺少 Webhook 到下载这一块</p><h2 id="行动"><a href="#行动" class="headerlink" title="行动"></a>行动</h2><p>于是写了一个简单的小工具 —— <a href="https://github.com/DIYgod/download-webhook" target="_blank" rel="noopener">download-webhook</a>，它可以通过一个简单的 post 请求，触发服务器执行 you-get，下载视频到指定目录</p><h2 id="效果"><a href="#效果" class="headerlink" title="效果"></a>效果</h2><ol><li><p>给咬人猫投币</p><p><img src="/images/download-webhook1.jpg" alt="" data-action="zoom"></p></li><li><p>RSS 更新</p><p><img src="/images/download-webhook2.jpg" alt="" data-action="zoom"></p></li><li><p>IFTTT 触发</p><p><img src="/images/download-webhook3.jpg" alt="" data-action="zoom"></p></li><li><p>download-webhook 收到下载请求</p><p><img src="/images/download-webhook4.jpg" alt="" data-action="zoom"></p></li><li><p>下载完成</p><p><img src="/images/download-webhook5.png" alt="" data-action="zoom"></p></li></ol><h2 id="进一步"><a href="#进一步" class="headerlink" title="进一步"></a>进一步</h2><p>以上同样适用于自动下载 YouTube \\ Instagram \\ Tumblr 视频、网易云音乐歌曲等，只要 RSSHub 和 you-get 支持</p><p>另外对于图片，Webhook URL 参数直接传入图片地址也可以下载，所以也可以轻松实现自动下载 Bing 每日壁纸、甚至 Telegram 的涩图频道（这里就不做推荐了）</p>',
+      '# mall学习教程\n' +
+      '<p>\n' +
+      '<a href="#公众号"><img src="http://macro-oss.oss-cn-shenzhen.aliyuncs.com/mall/badge/%E5%85%AC%E4%BC%97%E5%8F%B7-macrozheng-blue.svg" alt="公众号"></a>\n' +
+      '<a href="https://github.com/macrozheng/mall"><img src="http://macro-oss.oss-cn-shenzhen.aliyuncs.com/mall/badge/%E5%90%8E%E5%8F%B0%E9%A1%B9%E7%9B%AE-mall-blue.svg" alt="后台项目"></a>\n' +
+      '<a href="https://github.com/macrozheng/mall-admin-web"><img src="http://macro-oss.oss-cn-shenzhen.aliyuncs.com/mall/badge/%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE-mall--admin--web-green.svg" alt="前端项目"></a>\n' +
+      '</p>\n' +
+      '\n' +
+      '## 简介\n' +
+      'mall学习教程，架构、业务、技术要点全方位解析。mall项目（25k+star）是一套电商系统，使用现阶段主流技术实现。\n' +
+      '涵盖了SpringBoot2.1.3、MyBatis3.4.6、Elasticsearch6.2.2、RabbitMQ3.7.15、Redis3.2、Mongodb3.2、Mysql5.7等技术，采用Docker容器化部署。\n' +
+      '\n' +
+      '## 项目地址\n' +
+      '- 后台项目：[https://github.com/macrozheng/mall](https://github.com/macrozheng/mall)\n' +
+      '- 前端项目：[https://github.com/macrozheng/mall-admin-web](https://github.com/macrozheng/mall-admin-web)\n' +
+      '\n' +
+      '## 更好的阅读体验\n' +
+      '- 文档地址：[http://www.macrozheng.com](http://www.macrozheng.com)\n' +
+      '- 备用地址：[https://macrozheng.github.io/mall-learning](https://macrozheng.github.io/mall-learning)\n' +
+      '\n' +
+      '## 序章\n' +
+      '- [mall架构及功能概览](https://juejin.im/post/5cf7c305e51d4510b71da5c5)\n' +
+      '- [mall学习所需知识点（推荐资料）](https://juejin.im/post/5cf7c3aef265da1ba84a7fdc)\n' +
+      '\n' +
+      '## 架构篇\n' +
+      '> 手把手教你搭建一个mall在使用的项目骨架\n' +
+      '\n' +
+      '- [mall整合SpringBoot+MyBatis搭建基本骨架](https://juejin.im/post/5cf7c4a7e51d4577790c1c50)\n' +
+      '- [mall整合Swagger-UI实现在线API文档](https://juejin.im/post/5cf9035cf265da1bb47d54f8)\n' +
+      '- [mall整合Redis实现缓存功能](https://juejin.im/post/5cf90e9ee51d454f6f16eba0)\n' +
+      '- [mall整合SpringSecurity和JWT实现认证和授权（一）](https://juejin.im/post/5cf90fa5e51d455d6d5357d3)\n' +
+      '- [mall整合SpringSecurity和JWT实现认证和授权（二）](https://juejin.im/post/5cfa0933f265da1b8f1ab2da)\n' +
+      '- [mall整合SpringTask实现定时任务](https://juejin.im/post/5cfa0ea16fb9a07eaf2b8261)\n' +
+      '- [mall整合Elasticsearch实现商品搜索](https://juejin.im/post/5cfba3e9f265da1b614fea60)\n' +
+      '- [mall整合Mongodb实现文档操作](https://juejin.im/post/5cfba5b0f265da1bcc1933fe)\n' +
+      '- [mall整合RabbitMQ实现延迟消息](https://juejin.im/post/5cff98986fb9a07ed36ea139)\n' +
+      '- [mall整合OSS实现文件上传](https://juejin.im/post/5cff9944e51d4577555508a9)\n' +
+      '\n' +
+      '## 业务篇\n' +
+      '> 全面解析mall中使用的数据库表结构\n' +
+      '\n' +
+      '- [mall数据库表结构概览](https://juejin.im/post/5d34684c6fb9a07ef562724b)\n' +
+      '- [商品模块数据库表解析（一）](https://juejin.im/post/5d385a7e518825680e4577ee)\n' +
+      '- [商品模块数据库表解析（二）](https://juejin.im/post/5d39ba2cf265da1bc23fbd26)\n' +
+      '- [订单模块数据库表解析（一）](https://juejin.im/post/5d4196fef265da03bd04fa31)\n' +
+      '- [订单模块数据库表解析（二）](https://juejin.im/post/5d46db2a5188255d1e013ca0)\n' +
+      '- [订单模块数据库表解析（三）](https://juejin.im/post/5d497f92e51d4561e0516a9d)\n' +
+      '- [营销模块数据库表解析（一）](https://juejin.im/post/5d5012856fb9a06ad45135a6)\n' +
+      '- [营销模块数据库表解析（二）](https://juejin.im/post/5d555c7ae51d453b386a6302)\n' +
+      '- [营销模块数据库表解析（三）](https://juejin.im/post/5d5bf6676fb9a06b0703c0c5)\n' +
+      '\n' +
+      '## 技术要点篇\n' +
+      '> mall中一些功能的技术要点解析\n' +
+      '\n' +
+      '- [MyBatis Generator使用过程中踩过的一个坑](https://juejin.im/post/5d107037e51d45599e019de8)\n' +
+      '- [SpringBoot应用中使用AOP记录接口访问日志](https://juejin.im/post/5d2001bb6fb9a07edf276593)\n' +
+      '- [SpringBoot应用整合ELK实现日志收集](https://juejin.im/post/5d2738a2f265da1bac404299)\n' +
+      '- [前后端分离项目，如何解决跨域问题](https://juejin.im/post/5d4c162351882560b9545358)\n' +
+      '- [Java 8都出那么久了，Stream API了解下？](https://juejin.im/post/5d6d2016e51d453c135c5b25)\n' +
+      '- [仅需四步，整合SpringSecurity+JWT实现登录认证！](https://juejin.im/post/5df0e79bf265da33dd2f52af)\n' +
+      '\n' +
+      '## 部署篇\n' +
+      '> mall开发及生产环境的搭建\n' +
+      '\n' +
+      '- [mall在Windows环境下的部署](https://juejin.im/post/5d1362de51882551fe065b61)\n' +
+      '- [mall在Linux环境下的部署（基于Docker容器）](https://juejin.im/post/5d1802ab6fb9a07f0a2df5ae)\n' +
+      '- [mall在Linux环境下的部署（基于Docker Compose）](https://juejin.im/post/5d1c98d66fb9a07ebf4b8ad5)\n' +
+      '- [mall前端项目的安装与部署](https://juejin.im/post/5d2c7c6b518825076377d7b9)\n' +
+      '- [mall-swarm在Windows环境下的部署](https://juejin.im/post/5de3c1a35188256e855b6e54)\n' +
+      '- [mall-swarm在Linux环境下的部署（基于Docker容器）](https://juejin.im/post/5de65bffe51d4557f71a5ec1)\n' +
+      '\n' +
+      '\n' +
+      '## 进阶篇\n' +
+      '> 一套涵盖大部分核心组件使用的Spring Cloud教程，包括Spring Cloud Alibaba及分布式事务Seata，基于Spring Cloud Greenwich及SpringBoot 2.1.7\n' +
+      '\n' +
+      '- [Spring Cloud 整体架构概览](https://juejin.im/post/5d764f05e51d4561fb04bfd7)\n' +
+      '- [Spring Cloud Eureka：服务注册与发现](https://juejin.im/post/5d78cd53f265da03d55e8351)\n' +
+      '- [Spring Cloud Ribbon：负载均衡的服务调用](https://juejin.im/post/5d7f9006f265da03951a260c)\n' +
+      '- [Spring Cloud Hystrix：服务容错保护](https://juejin.im/post/5d822d27e51d45621479ad92)\n' +
+      '- [Hystrix Dashboard：断路器执行监控](https://juejin.im/post/5d88cb58f265da03e4679eff)\n' +
+      '- [Spring Cloud OpenFeign：基于Ribbon和Hystrix的声明式服务调用](https://juejin.im/post/5d9c85c3e51d45782c23fab6)\n' +
+      '- [Spring Cloud Zuul：API网关服务](https://juejin.im/post/5d9f2dea6fb9a04e3e724067)\n' +
+      '- [Spring Cloud Config：外部集中化配置管理](https://juejin.im/post/5da4709af265da5baa5b06ac)\n' +
+      '- [Spring Cloud Bus：消息总线](https://juejin.im/post/5da70d1351882509615bea34)\n' +
+      '- [Spring Cloud Sleuth：分布式请求链路跟踪](https://juejin.im/post/5dadb4d36fb9a04e02409a7d)\n' +
+      '- [Spring Cloud Consul：服务治理与配置中心](https://juejin.im/post/5db05582f265da4d4c20180f)\n' +
+      '- [Spring Cloud Gateway：新一代API网关服务](https://juejin.im/post/5db6eed6518825644076d0b6)\n' +
+      '- [Spring Boot Admin：微服务应用监控](https://juejin.im/post/5db98a2d518825649c730f81)\n' +
+      '- [Spring Cloud Security：Oauth2使用入门](https://juejin.im/post/5dc013bae51d456e817cec30)\n' +
+      '- [Spring Cloud Security：Oauth2结合JWT使用](https://juejin.im/post/5dc2bec6f265da4d4f65bebe)\n' +
+      '- [Spring Cloud Security：Oauth2实现单点登录](https://juejin.im/post/5dc95a675188256e040db43f)\n' +
+      '- [Spring Cloud Alibaba：Nacos 作为注册中心和配置中心使用](https://juejin.im/post/5dcbf7bc5188250d1f5a78ea)\n' +
+      '- [Spring Cloud Alibaba：Sentinel实现熔断与限流](https://juejin.im/post/5dd29bece51d4561e80f9053)\n' +
+      '- [使用Seata彻底解决Spring Cloud中的分布式事务问题](https://juejin.im/post/5dd53a9d5188255d35425a08)\n' +
+      '- [IDEA中创建和启动SpringBoot应用的正确姿势](https://juejin.im/post/5d8b69366fb9a04e3348b06c)\n' +
+      '\n' +
+      '## 参考篇\n' +
+      '> mall相关技术的使用教程\n' +
+      '\n' +
+      '- [IDEA常用设置及推荐插件](https://juejin.im/post/5d0458085188256aa76bc678)\n' +
+      '- [开发者必备Mysql命令](https://juejin.im/post/5d00fd40f265da1bb67a11b3)\n' +
+      '- [开发者必备Linux命令](https://juejin.im/post/5d0253845188255e1305c741)\n' +
+      '- [Linux防火墙Firewall和Iptables的使用](https://juejin.im/post/5d0253fe6fb9a07edb39420d)\n' +
+      '- [Navicat实用功能：数据备份与结构同步](https://juejin.im/post/5d00fc865188255fc6384126)\n' +
+      '- [开发者必备Docker命令](https://juejin.im/post/5d0781f56fb9a07f014ef6be)\n' +
+      '- [使用Maven插件构建Docker镜像](https://juejin.im/post/5d08e3d26fb9a07ed8424488)\n' +
+      '- [使用DockerFile为SpringBoot应用构建Docker镜像](https://juejin.im/post/5d0a25b76fb9a07ed524a438)\n' +
+      '- [使用Docker Compose部署SpringBoot应用](https://juejin.im/user/5cf7c1d7f265da1bc07e28b7)\n' +
+      '- [Postman：API接口调试利器](https://juejin.im/post/5d5a9032e51d4561db5e3a4a)\n' +
+      '- [10分钟搭建自己的Git仓库](https://juejin.im/post/5d63d600e51d453c135c5af3)\n' +
+      '- [IDEA中的Git操作，看这一篇就够了！](https://juejin.im/post/5d667fc6e51d453b5d4d8da5)\n' +
+      '- [Hutool中那些常用的工具类和方法](https://juejin.im/post/5d6fb7b0e51d4561c67840de)\n' +
+      '- [虚拟机安装及使用Linux，看这一篇就够了！](https://juejin.im/post/5ddfd1665188256ec024cb7c)\n' +
+      '- [Nginx的这些妙用，你肯定有不知道的！](https://juejin.im/post/5dee499151882512444014eb)\n' +
+      '\n' +
+      '\n' +
+      '## 公众号\n' +
+      '\n' +
+      'mall项目全套学习教程连载中，**关注公众号**第一时间获取。\n' +
+      '\n' +
+      '![公众号图片](http://macro-oss.oss-cn-shenzhen.aliyuncs.com/mall/banner/qrcode_for_macrozheng_258.jpg)\n',
     page_view: 14873,
     article_type: '创作集',
     created_at: '2019-08-06 12:12',
