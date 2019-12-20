@@ -139,7 +139,9 @@ const BlogLayout: React.FC<BlogLayoutProps> = props => {
           </div>
         </div>
       </header>
-      <main className={styles.main}>{children}</main>
+      <main className={styles.main} id="main">
+        {children}
+      </main>
       <footer></footer>
       <div
         className={styles.backToTop}

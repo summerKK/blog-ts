@@ -3,10 +3,10 @@ import { Skeleton } from 'antd';
 import styles from '@/components/ArticleSkeleton/index.less';
 import classNames from 'classnames';
 import { ArticleListDataItemType } from '@/pages/frontend/data';
-import ReactMarkdown from 'react-markdown';
 import Ellipsis from '@/components/Ellipsis';
 import ArticleSkeleton from '@/components/ArticleSkeleton/ArticleSkeleton';
 import Link from 'umi/link';
+import MarkDown from '@/components/MarkDown/MarkDown';
 
 interface ArticleProps {
   dataSource: ArticleListDataItemType[];
@@ -32,7 +32,7 @@ const Index: React.FC<ArticleProps> = ({ loading, dataSource, ...rest }) => {
           <ArticleSkeleton item={item} {...rest} key={item.id}>
             <div className={styles.articleBody}>
               <Ellipsis lines={6}>
-                <ReactMarkdown source={item.content} escapeHtml={false} />
+                <MarkDown content={item.content} />
               </Ellipsis>
             </div>
             <div className={styles.articleDetail}>
