@@ -19,4 +19,5 @@ services:
       - ../config:/usr/src/app/config
       - ../mock:/usr/src/app/mock
       - ../package.json:/usr/src/app/package.json
+      - ../docker:/usr/src/app/docker
 
