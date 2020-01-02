@@ -11,6 +11,7 @@ import classNames from 'classnames';
 import MarkDown from '@/components/MarkDown/MarkDown';
 import Tocify from '@/components/MarkDown/Tocify';
 import { Affix, Card } from 'antd';
+import ArticleComment from '@/pages/frontend/article-detail/components/Comment';
 
 interface ArticleDetailStats {
   tocify?: Tocify;
@@ -69,7 +70,7 @@ class ArticleDetail extends Component<ArticleDetailProps, ArticleDetailStats> {
     const { tocify } = this.state;
     return (
       <div className={articleListStyle.mainInner}>
-        <section className={classNames(styles.content, styles.clearfix)}>
+        <div className={classNames(styles.content, styles.clearfix)}>
           <ArticleSkeleton item={item} loading={loading}>
             <MarkDown
               content={item.content}
@@ -77,9 +78,12 @@ class ArticleDetail extends Component<ArticleDetailProps, ArticleDetailStats> {
               getTocify={this.setTocity}
             />
           </ArticleSkeleton>
-        </section>
+          <div>
+            <ArticleComment />
+          </div>
+        </div>
         <Affix offsetTop={60}>
-          <Card style={{ width: 325, float: 'right', borderRadius: '8px' }}>
+          <Card style={{ width: 325, float: 'right' }} className={styles.clearfix}>
             {tocify && tocify.render()}
           </Card>
         </Affix>
