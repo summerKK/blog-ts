@@ -12,6 +12,7 @@ interface IndexProps {
   dispatch: Dispatch<any>;
 }
 
+// hello,world
 @connect(
   ({
     articleList,
