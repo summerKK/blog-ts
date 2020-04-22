@@ -108,10 +108,6 @@ const BlogLayout: React.FC<BlogLayoutProps> = props => {
                 <a href="">投喂</a>
               </li>
               <li>
-                <Icon type="man" className={styles.iconStyle} />
-                <a href="">后宫</a>
-              </li>
-              <li>
                 <Icon type="edit" className={styles.iconStyle} />
                 <a href="">留言板</a>
               </li>
