@@ -1,3 +1,7 @@
+# 打包到 github(gp-pages)
+
+- `cross-env GH_PAGES=true npm run deploy`
+
 # demo
 
 [demo](http://blog.summercc.xyz)

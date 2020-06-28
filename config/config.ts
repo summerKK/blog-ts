@@ -7,7 +7,7 @@ const { pwa, primaryColor } = defaultSettings;
 
 // preview.pro.ant.design only do not use in your production ;
 // preview.pro.ant.design 专用环境变量，请不要在你的项目中使用它。
-const { ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION } = process.env;
+const { ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION, GH_PAGES = false } = process.env;
 const isAntDesignProPreview = ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION === 'site';
 const plugins: IPlugin[] = [
   [
@@ -203,12 +203,14 @@ export default {
   },
   chainWebpack: webpackPlugin,
   /*
-      proxy: {
-        '/server/api/': {
-          target: 'https://preview.pro.ant.design/',
-          changeOrigin: true,
-          pathRewrite: { '^/server': '' },
+        proxy: {
+          '/server/api/': {
+            target: 'https://preview.pro.ant.design/',
+            changeOrigin: true,
+            pathRewrite: { '^/server': '' },
+          },
         },
-      },
-      */
+        */
+  base: GH_PAGES ? '/blog-ts/' : '/',
+  publicPath: GH_PAGES ? '/blog-ts/' : '/',
 } as IConfig;
