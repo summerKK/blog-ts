@@ -1317,6 +1317,11 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
+"@bugsnag/safe-json-stringify@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/@bugsnag/safe-json-stringify/-/safe-json-stringify-5.0.0.tgz#1c39847968b52f5c08b7c76754406f9d4446b292"
+  integrity sha512-EdGnA7n2UmX9Z0e2tIU0biKz8tCgtjbY69KoyH3yiMzm7Q9sriIlN9bZjqhTOKzM0GdLSGrkyKWif08xWKyucA==
+
 "@cnakazawa/watch@^1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@cnakazawa/watch/-/watch-1.0.3.tgz#099139eaec7ebf07a27c1786a3ff64f39464d2ef"
@@ -7213,6 +7218,18 @@ functions-have-names@^1.1.1:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/functions-have-names/-/functions-have-names-1.2.0.tgz#83da7583e4ea0c9ac5ff530f73394b033e0bf77d"
   integrity sha512-zKXyzksTeaCSw5wIX79iCA40YAa6CJMJgNg9wdkU/ERBrIdPSimPICYiLp65lRbSBqtiHql/HZfS2DyI/AH6tQ==
+
+fundebug-javascript@^2.4.2:
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/fundebug-javascript/-/fundebug-javascript-2.4.2.tgz#5999866205a488cdfac71cc7fa10c944c9d1be54"
+  integrity sha512-ZGb4EeL/3uVC/t4B/GXBN4MQAXv0YjJ5vgXp/gxPkn7UHK+9c4jaC8DdiPbZZ2Quls7A5CvF/JLz9lAiuSc6rg==
+  dependencies:
+    "@bugsnag/safe-json-stringify" "^5.0.0"
+
+fundebug-revideo@^0.6.2:
+  version "0.6.2"
+  resolved "https://registry.yarnpkg.com/fundebug-revideo/-/fundebug-revideo-0.6.2.tgz#717dee68ba782d9d92a5b91218549283cc3bead5"
+  integrity sha512-mz7iNE2GpWsp6h2yCPZp/Gkwgf7j1x0N9w6ipxh6o4sucTubqo/A/gPPgdTlLuS7Lo2jiOTAS80Kg+OJiQTDag==
 
 gauge@~2.7.3:
   version "2.7.4"

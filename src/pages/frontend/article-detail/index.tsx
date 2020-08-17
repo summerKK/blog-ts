@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
-import { StateType } from '@/pages/frontend/article-detail/model';
 import { Dispatch } from 'redux';
 import { connect } from 'dva';
+import classNames from 'classnames';
+import { Affix, Card } from 'antd';
+import { StateType } from '@/pages/frontend/article-detail/model';
 import ArticleSkeleton from '@/components/ArticleSkeleton/ArticleSkeleton';
 import { ArticleListDataItemType } from '@/pages/frontend/data';
 import { ConnectProps } from '@/models/connect';
 import styles from '@/components/ArticleSkeleton/index.less';
 import articleListStyle from '@/pages/frontend/article-list/index.less';
-import classNames from 'classnames';
 import MarkDown from '@/components/MarkDown/MarkDown';
 import Tocify from '@/components/MarkDown/Tocify';
-import { Affix, Card } from 'antd';
 import ArticleComment from '@/pages/frontend/article-detail/components/Comment';
 
 interface ArticleDetailStats {

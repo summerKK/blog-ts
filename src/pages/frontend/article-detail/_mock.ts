@@ -329,16 +329,12 @@ const fakeArticles = [
       '\n' +
       '例如，语句`slice := make([]int, 5, 10)`所创建的Slice，结构如下图所示：\n' +
       '\n' +
-      '![](images/slice-01-make_slice.png)\n' +
-      '\n' +
       '该Slice长度为5，即可以使用下标slice[0] ~ slice[4]来操作里面的元素，capacity为10，表示后续向slice添加新的元素时可以不必重新分配内存，直接使用预留内存即可。\n' +
       '\n' +
       '## 3.3 使用数组创建Slice\n' +
       '使用数组来创建Slice时，Slice将与原数组共用一部分内存。\n' +
       '\n' +
       '例如，语句`slice := array[5:7]`所创建的Slice，结构如下图所示：\n' +
-      '\n' +
-      '![](images/slice-02-create_slice_from_array.png)\n' +
       '\n' +
       '切片从数组array[5]开始，到数组array[7]结束（不含array[7]），即切片长度为2，数组后面的内容都作为切片的预留内存，即capacity为5。\n' +
       '\n' +
@@ -348,8 +344,6 @@ const fakeArticles = [
       '使用append向Slice追加元素时，如果Slice空间不足，将会触发Slice扩容，扩容实际上是重新分配一块更大的内存，将原Slice数据拷贝进新Slice，然后返回新Slice，扩容后再将数据追加进去。\n' +
       '\n' +
       '例如，当向一个capacity为5，且length也为5的Slice再次追加1个元素时，就会发生扩容，如下图所示：\n' +
-      '\n' +
-      '![](images/slice-03-slice_expand.png)\n' +
       '\n' +
       '扩容操作只关心容量，会把原Slice数据拷贝到新Slice，追加数据由append在扩容结束后完成。上图可见，扩容后新的Slice长度仍然是5，但容量由5提升到了10，原Slice的数据也都拷贝到了新Slice指向的数组中。\n' +
       '\n' +

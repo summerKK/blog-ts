@@ -1,12 +1,13 @@
 import React, { useEffect } from 'react';
 import { Avatar, Icon } from 'antd';
+import classNames from 'classnames';
+import { debounce, throttle } from 'lodash';
 import styles from './BlogLayout.less';
-import { throttle, debounce } from 'lodash';
 import backgroundCanvas from '@/utils/background';
 import CursorSpecialEffects from '@/utils/cursor-effects';
 import Aplayer from '@/components/Aplayer';
 import avatar from '../assets/images/avatar.jpeg';
-import classNames from 'classnames';
+import { ErrorBoundary } from '@/utils/ErrorBoundary';
 
 interface BlogLayoutProps {
   children: React.ReactElement[];
@@ -82,7 +83,7 @@ const BlogLayout: React.FC<BlogLayoutProps> = props => {
   };
 
   return (
-    <React.Fragment>
+    <ErrorBoundary>
       <header className={styles.header}>
         <div className={styles.headerInner}>
           <nav className={classNames(styles.nav)} id="nav">
@@ -138,17 +139,17 @@ const BlogLayout: React.FC<BlogLayoutProps> = props => {
       <main className={styles.main} id="main">
         {children}
       </main>
-      <footer></footer>
+      <footer />
       <div
         className={styles.backToTop}
         style={{ top: '-900px' }}
         id="backToTop"
         onClick={backToTop}
-      ></div>
-      <canvas id="evanyou"></canvas>
+      />
+      <canvas id="evanyou" />
       <Aplayer />
-      <div id="cursorEffect"></div>
-    </React.Fragment>
+      <div id="cursorEffect" />
+    </ErrorBoundary>
   );
 };
 
